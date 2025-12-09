@@ -22,6 +22,8 @@ public class PlayerMove : MonoBehaviour
 
     private float _yVelocity = 0f;   // 중력에 의해 누적될 y값 변수
 
+    private int _jumpCount = 2;
+
     private void Awake()
     {
         _controller = GetComponent<CharacterController>();
@@ -48,9 +50,20 @@ public class PlayerMove : MonoBehaviour
 
 
         // - 점프! : 점프 키를 누르고 && 땅이라면
-        if (Input.GetButtonDown("Jump") && _controller.isGrounded)
+        if (Input.GetButtonDown("Jump") && _controller.isGrounded && _jumpCount == 2)
         {
-            _yVelocity = _stats.JumpPower.Value;
+            Jump();           
+        }
+        else if (Input.GetButtonDown("Jump") && _jumpCount == 1)
+        {
+            if(_stats.Stamina.TryConsume(_config.JumpStamina))
+            {
+                Jump();
+            }
+        }
+        else if(_controller.isGrounded)
+        {
+            _jumpCount = 2;
         }
 
         // - 카메라가 쳐다보는 방향으로 변환한다. (월드 -> 로컬)
@@ -58,15 +71,22 @@ public class PlayerMove : MonoBehaviour
         direction.y = _yVelocity; // 중력 적용
 
 
-
         float moveSpeed = _stats.MoveSpeed.Value;
-        if (Input.GetKey(KeyCode.LeftShift) && _stats.Stamina.TryConsume(_config.RunStamina * Time.deltaTime))
+        if (Input.GetKey(KeyCode.LeftShift) && _controller.isGrounded)
         {
-            moveSpeed = _stats.RunSpeed.Value;
+            if(_stats.Stamina.TryConsume(_config.RunStamina * Time.deltaTime))
+            {
+                moveSpeed = _stats.RunSpeed.Value;
+            }
         }
 
         // 3. 방향으로 이동시키기  
         _controller.Move(direction * moveSpeed * Time.deltaTime);
+    }
+    private void Jump()
+    {
+        _yVelocity = _stats.JumpPower.Value;
+        _jumpCount--;
     }
 
 }
