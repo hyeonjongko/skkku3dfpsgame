@@ -6,7 +6,7 @@ public class CoroutineExample3 : MonoBehaviour
     private void Start()
     {
         //1. 코루틴도 함수이므로 인자를 넘겨줄 수 있다.
-        StartCoroutine(Ready_Coroutine(1f));
+        StartCoroutine(Sequence_Coroutine());
     }
     private IEnumerator Sequence_Coroutine()
     {

@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class CoroutineExample2 : MonoBehaviour
 {
-    private Coroutine _coroutine;
+    public Coroutine _coroutine;
     //시간을 제어하고 싶을 때 코루틴을 많이 사용할 것이다.
     private void Update()
     {
