@@ -1,4 +1,5 @@
 using UnityEngine;
+using TMPro;
 
 public class PlayerBombFire : MonoBehaviour
 {
@@ -13,13 +14,33 @@ public class PlayerBombFire : MonoBehaviour
     [SerializeField] private Bomb _bombPrefab;
     [SerializeField] private float _throwPower = 15f;
 
+    [SerializeField] public int _bombCount = 5;
+
+    
+
+    private void Start()
+    {
+        Debug.Log($"남은 폭탄 수 : {_bombCount}");
+    }
+
     private void Update()
     {
         if(Input.GetMouseButtonDown(1))
         {
-            Bomb bomb = Instantiate(_bombPrefab, _fireTransform.position, Quaternion.identity);
-            Rigidbody rigidbody = bomb.GetComponent<Rigidbody>();
-            rigidbody.AddForce(Camera.main.transform.forward * _throwPower, ForceMode.Impulse);
+            _bombCount--;
+            if(_bombCount >= 0)
+            {
+                Bomb bomb = Instantiate(_bombPrefab, _fireTransform.position, Quaternion.identity);
+                Rigidbody rigidbody = bomb.GetComponent<Rigidbody>();
+                rigidbody.AddForce(Camera.main.transform.forward * _throwPower, ForceMode.Impulse);
+                Debug.Log($"남은 폭탄 수 : {_bombCount}");
+            }
+            else if(_bombCount < 0)
+            {
+                _bombCount = 0;
+                Debug.Log($"남은 폭탄이 없습니다.");
+            }
+            
         }
     }
 
