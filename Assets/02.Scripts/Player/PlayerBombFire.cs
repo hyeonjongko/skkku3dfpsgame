@@ -1,5 +1,6 @@
 using UnityEngine;
 using TMPro;
+using Unity.VisualScripting;
 
 public class PlayerBombFire : MonoBehaviour
 {
@@ -16,10 +17,12 @@ public class PlayerBombFire : MonoBehaviour
 
     [SerializeField] public int _bombCount = 5;
 
-    
+    private BombFactory _bombFactory;
+
 
     private void Start()
     {
+        _bombFactory = GameObject.Find("BombFactory").GetComponent<BombFactory>();
         Debug.Log($"남은 폭탄 수 : {_bombCount}");
     }
 
@@ -30,7 +33,9 @@ public class PlayerBombFire : MonoBehaviour
             _bombCount--;
             if(_bombCount >= 0)
             {
-                Bomb bomb = Instantiate(_bombPrefab, _fireTransform.position, Quaternion.identity);
+                
+                GameObject bomb = _bombFactory.MakeBomb(_fireTransform.position);
+                //Bomb bomb = Instantiate(_bombPrefab, _fireTransform.position, Quaternion.identity);
                 Rigidbody rigidbody = bomb.GetComponent<Rigidbody>();
                 rigidbody.AddForce(Camera.main.transform.forward * _throwPower, ForceMode.Impulse);
                 Debug.Log($"남은 폭탄 수 : {_bombCount}");
