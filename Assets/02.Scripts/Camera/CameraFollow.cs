@@ -1,15 +1,23 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 // 목표를 따라다니는 카메라
 public class CameraFollow : MonoBehaviour
 {
-    public Transform Target;
+    public Transform FPSTarget;
+    public Transform TPSTarget;
 
+    private bool _isFPS = true;
+
+    private void Start()
+    {
+        transform.position = FPSTarget.position;
+        transform.rotation = FPSTarget.rotation;
+    }
     private void LateUpdate()
     {
-<<<<<<< Updated upstream
-        transform.position = Target.position;
-=======
+
+        transform.position = FPSTarget.position;
+
         if (Input.GetKeyDown(KeyCode.T))
         {
             _isFPS = !_isFPS;
@@ -18,14 +26,13 @@ public class CameraFollow : MonoBehaviour
         if (_isFPS)
         {
             transform.position = FPSTarget.position;
-            //transform.rotation = FPSTarget.rotation;
+
         }
         else
         {
             transform.position = TPSTarget.position;
             //transform.rotation = TPSTarget.rotation;
         }
->>>>>>> Stashed changes
     }
 
 }
