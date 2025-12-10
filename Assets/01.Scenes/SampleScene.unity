@@ -1029,6 +1029,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _fireTransform: {fileID: 1559447257}
   _hitEffect: {fileID: 1246884260}
+  _delay: 0.5
 --- !u!1 &592693249
 GameObject:
   m_ObjectHideFlags: 0

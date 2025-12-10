@@ -7,8 +7,12 @@ public class PlayerGunFire : MonoBehaviour
     [SerializeField] private Transform _fireTransform;
     [SerializeField] private ParticleSystem _hitEffect;
 
+    [Header("연사 속도")]
     private float _time = 0f;
     public float _delay = 3.5f;
+
+    [Header("장전")]
+    private int _bulletCount = 30;
 
     private void Start()
     {
