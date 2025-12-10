@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 
 //카메라 회전 기능
@@ -13,14 +13,13 @@ public class CameraRotate : MonoBehaviour
     private void Update()
     {
         //게임이 시작하면 y축이 0도에서 시작 -> -1도
-        if(!Input.GetMouseButton(1))
+        if(!Input.GetMouseButton(2))
         {
             return;
         }
         // 1.마우스 입력 받기
         float mouseX = Input.GetAxis("Mouse X");
         float mouseY = Input.GetAxis("Mouse Y");
-        Debug.Log($"{mouseX}:{mouseY}");
 
         //2. 마우스 입력을 누적한다.
         _accumulationX += mouseX * RotationSpeed * Time.deltaTime;
