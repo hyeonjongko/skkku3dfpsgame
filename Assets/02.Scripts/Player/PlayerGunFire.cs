@@ -16,6 +16,8 @@ public class PlayerGunFire : MonoBehaviour
     [SerializeField] private int _bulletCount = 0;
     private int _bulletCountMax = 30;
     public float ReloadTime = 1.6f;
+    private int _shootBullets = 0;
+    public int ReverseBullets = 120;
 
     private float _reloadProgress;
     private bool _isReloading;
@@ -31,6 +33,7 @@ public class PlayerGunFire : MonoBehaviour
         _time = _delay;
         _bulletCount = _bulletCountMax;
     }
+
     private void Update()
     {
         //1. 마우스 왼쪽 버튼이 눌린다면
@@ -70,6 +73,7 @@ public class PlayerGunFire : MonoBehaviour
                         //_hitEffect.Emit(emitParams, 1); //Emit(커스텀할 정보, 분출할 갯수)
                     }
                     _bulletCount--;
+                    _shootBullets++;
                     _time = 0f;
                 }
                 _time += Time.deltaTime;
@@ -102,6 +106,8 @@ public class PlayerGunFire : MonoBehaviour
         // 장전 완료
         _reloadProgress = 1f;
         _bulletCount = _bulletCountMax;
+        ReverseBullets -= _shootBullets;
+        _shootBullets = 0;
 
         // 바로 슬라이더 비우기
         _reloadProgress = 0f;

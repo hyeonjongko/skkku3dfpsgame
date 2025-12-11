@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -5,6 +6,7 @@ public class ReloadUI : MonoBehaviour
 {
     private PlayerGunFire _playerGunFire;
     [SerializeField] private Slider _reloadSlider;
+    [SerializeField] private TextMeshProUGUI _bulletCountText;
 
     void Start()
     {
@@ -21,6 +23,11 @@ public class ReloadUI : MonoBehaviour
         if (_playerGunFire != null && _reloadSlider != null)
         {
             _reloadSlider.value = _playerGunFire.ReloadProgress;
+        }
+        if (_playerGunFire != null && _bulletCountText != null)
+        {
+            // "현재탄창 / 예비탄약" 형식
+            //_bulletCountText.text = $"{_playerGunFire._bulletCount} / {_playerGunFire.ReverseBullets}";
         }
     }
 }
