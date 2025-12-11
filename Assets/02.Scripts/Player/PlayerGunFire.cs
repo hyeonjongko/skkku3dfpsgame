@@ -93,7 +93,7 @@ public class PlayerGunFire : MonoBehaviour
                 _time += Time.deltaTime;
             }
         }
-        if (Input.GetKeyDown(KeyCode.R) && !IsReloading)
+        if (Input.GetKeyDown(KeyCode.R) && !IsReloading && ReverseBullets > 0)
         {
             StartCoroutine(Reload_Coroutine());
         }
