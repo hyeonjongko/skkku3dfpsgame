@@ -7,6 +7,7 @@ public class PlayerGunFire : MonoBehaviour
     //목표 : 마우스의 왼쪽 버튼을 누르면 바라보는 방향으로 총을 발사하고 싶다. (총알을 날리고 싶다)
     [SerializeField] private Transform _fireTransform;
     [SerializeField] private ParticleSystem _hitEffect;
+    [SerializeField] private CameraRotate _cameraRotate;
 
     [Header("연사 속도")]
     private float _time = 0f;
@@ -23,6 +24,9 @@ public class PlayerGunFire : MonoBehaviour
     private float _reloadProgress;
     private bool _isReloading;
 
+    [Header("반동")]
+    public float RecoilAmount = 1.5f;
+
     public float ReloadProgress => _reloadProgress;
     public bool IsReloading => _isReloading;
 
@@ -33,6 +37,7 @@ public class PlayerGunFire : MonoBehaviour
     {
         _time = _delay;
         _bulletCount = _bulletCountMax;
+        _cameraRotate = Camera.main.GetComponent<CameraRotate>();
     }
 
     private void Update()
@@ -73,7 +78,7 @@ public class PlayerGunFire : MonoBehaviour
                             monster.TryTakeDamage(10);
                         }
 
-
+                        _cameraRotate.AddRecoil(RecoilAmount);
 
                         //ParticleSystem.EmitParams emitParams = new ParticleSystem.EmitParams();
                         //emitParams.position = hitInfo.point;
