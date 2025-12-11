@@ -13,18 +13,28 @@ public class PlayerGunFire : MonoBehaviour
     public float _delay = 3.5f;
 
     [Header("장전")]
-    [SerializeField] private int _bulletCount = 30;
+    [SerializeField] private int _bulletCount = 0;
+    private int _bulletCountMax = 30;
     public float ReloadTime = 1.6f;
+
+    private float _reloadProgress;
+    private bool _isReloading;
+
+    public float ReloadProgress => _reloadProgress;
+    public bool IsReloading => _isReloading;
+
+
 
 
     private void Start()
     {
         _time = _delay;
+        _bulletCount = _bulletCountMax;
     }
     private void Update()
     {
         //1. 마우스 왼쪽 버튼이 눌린다면
-        if (Input.GetMouseButton(0))
+        if (Input.GetMouseButton(0) && !IsReloading)
         {
             if (_bulletCount > 0)
             {
@@ -65,7 +75,7 @@ public class PlayerGunFire : MonoBehaviour
                 _time += Time.deltaTime;
             }
         }
-        if (Input.GetKeyDown(KeyCode.R))
+        if (Input.GetKeyDown(KeyCode.R) && !IsReloading)
         {
             StartCoroutine(Reload_Coroutine());
         }
@@ -76,8 +86,26 @@ public class PlayerGunFire : MonoBehaviour
     }
     private IEnumerator Reload_Coroutine()
     {
-        yield return new WaitForSeconds(ReloadTime);
-        _bulletCount = 30;
+        _isReloading = true;
+        _reloadProgress = 0f;
+
+        float elapsedTime = 0f;
+
+        // 장전 진행
+        while (elapsedTime < ReloadTime)
+        {
+            elapsedTime += Time.deltaTime;
+            _reloadProgress = elapsedTime / ReloadTime; // 0 ~ 1 사이의 값
+            yield return null;
+        }
+
+        // 장전 완료
+        _reloadProgress = 1f;
+        _bulletCount = _bulletCountMax;
+
+        // 바로 슬라이더 비우기
+        _reloadProgress = 0f;
+        _isReloading = false;
     }
 
 }

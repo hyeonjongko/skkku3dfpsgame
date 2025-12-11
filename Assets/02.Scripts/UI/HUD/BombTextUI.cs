@@ -20,7 +20,7 @@ public class BombTextUI : MonoBehaviour
     {
         if (_playerBombFire != null && _bombCountText != null)
         {
-            _bombCountText.text = _playerBombFire._bombCount.ToString();            
+            _bombCountText.text = _playerBombFire.BombCount.ToString();           
         }
     }
 }

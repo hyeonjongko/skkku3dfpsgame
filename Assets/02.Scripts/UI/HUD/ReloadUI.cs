@@ -18,6 +18,9 @@ public class ReloadUI : MonoBehaviour
 
     void Update()
     {
-
+        if (_playerGunFire != null && _reloadSlider != null)
+        {
+            _reloadSlider.value = _playerGunFire.ReloadProgress;
+        }
     }
 }

@@ -15,7 +15,8 @@ public class PlayerBombFire : MonoBehaviour
     [SerializeField] private Bomb _bombPrefab;
     [SerializeField] private float _throwPower = 15f;
 
-    [SerializeField] public int _bombCount = 5;
+    [SerializeField] private int _bombCount = 5;
+    public int BombCount => _bombCount;
 
     private BombFactory _bombFactory;
 
