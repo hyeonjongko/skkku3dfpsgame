@@ -42,14 +42,14 @@ namespace MirzaBeig.CinematicExplosionsFree
 
         public float GetIntervalFPS()
         {
-            // 1 / time.unscaledDeltaTime for same-frame results.
+            // 1 / _time.unscaledDeltaTime for same-frame results.
             // Same as above, but uses accumulated frameCount and deltaTime.
 
             return intervalFrameCount / elapsedIntervalTime;
         }
         public float GetIntervalFrameMS()
         {
-            // Calculate average frame delta during interval (time / frames).
+            // Calculate average frame delta during interval (_time / frames).
             // Same as Time.unscaledDeltaTime * 1000.0f, using accumulation.
 
             return (elapsedIntervalTime * 1000.0f) / intervalFrameCount;

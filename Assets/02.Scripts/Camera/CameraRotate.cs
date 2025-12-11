@@ -7,13 +7,28 @@ public class CameraRotate : MonoBehaviour
 {
     public float RotationSpeed = 200f; // 0 ~ 360
 
+    [Header("반동 설정")]
+    public float MaxRecoilAngle = 30f; 
+    public float ShakeAmount = 1.5f;   
+    public float ShakeRecoverySpeed = 8f;
+    private float _currentShakeX = 0f;
+
     // 유니티는  0 ~ 360도 체계이므로 우리가 따로 저장할 -360 ~ 360 체계로 누적할 변수
     private float _accumulationX = 0;
     private float _accumulationY = 0;
     private void Update()
     {
+        if (Mathf.Abs(_currentShakeX) > 0.01f)
+        {
+            _currentShakeX = Mathf.Lerp(_currentShakeX, 0f, ShakeRecoverySpeed * Time.deltaTime);
+        }
+        else
+        {
+            _currentShakeX = 0f;
+        }
+
         //게임이 시작하면 y축이 0도에서 시작 -> -1도
-        if(!Input.GetMouseButton(2))
+        if (!Input.GetMouseButton(2))
         {
             return;
         }
@@ -35,5 +50,26 @@ public class CameraRotate : MonoBehaviour
 
         //문제 : 잘 되긴 되는데 한번씩 세상이 뒤집어진다..
 
+    }
+    // 총 반동을 추가하는 메서드 (복구 없이 누적)
+    public void AddRecoil(float recoilAmount)
+    {
+        // 위쪽 반동 누적 (복구 안됨)
+        _accumulationY += recoilAmount;
+
+        // 반동이 최대 각도를 넘지 않도록 제한
+        if (_accumulationY < -MaxRecoilAngle)
+        {
+            _accumulationY = -MaxRecoilAngle;
+        }
+
+        // 전체 범위 제한 (-90 ~ 90)
+        _accumulationY = Mathf.Clamp(_accumulationY, -90f, 90f);
+
+        // 좌우 랜덤 쉐이크 추가 (복구됨)
+        _currentShakeX += Random.Range(-ShakeAmount, ShakeAmount);
+
+        // 즉시 카메라 회전 적용
+        transform.eulerAngles = new Vector3(-_accumulationY, _accumulationX + _currentShakeX);
     }
 }
