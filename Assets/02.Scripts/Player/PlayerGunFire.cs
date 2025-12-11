@@ -14,6 +14,7 @@ public class PlayerGunFire : MonoBehaviour
 
     [Header("장전")]
     [SerializeField] private int _bulletCount = 0;
+    public int BulletCount => _bulletCount;
     private int _bulletCountMax = 30;
     public float ReloadTime = 1.6f;
     private int _shootBullets = 0;
@@ -64,6 +65,14 @@ public class PlayerGunFire : MonoBehaviour
                         _hitEffect.transform.forward = hitInfo.normal;
 
                         _hitEffect.Play();
+
+                       //태그랑 레이어 비교 안한 이유?
+                       Monster monster = hitInfo.collider.gameObject.GetComponent<Monster>();
+                        if (monster != null)
+                        {
+                            monster.TryTakeDamage(10);
+                        }
+
 
 
                         //ParticleSystem.EmitParams emitParams = new ParticleSystem.EmitParams();

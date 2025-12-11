@@ -7,6 +7,7 @@ public class CameraFollow : MonoBehaviour
     public Transform TPSTarget;
 
     private bool _isFPS = true;
+    public bool IsFPS => _isFPS;
 
     private void Start()
     {

@@ -2,7 +2,7 @@ using UnityEngine;
 
 public enum EMonsterState
 {
-    idle,
+    Idle,
     Trace,
     Comeback,
     Attack,

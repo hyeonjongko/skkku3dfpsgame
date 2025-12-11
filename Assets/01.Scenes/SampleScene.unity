@@ -1514,7 +1514,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _reloadSlider: {fileID: 1531270012}
-  _bulletCountText: {fileID: 0}
+  _bulletCountText: {fileID: 2046365532}
 --- !u!1 &1063812918
 GameObject:
   m_ObjectHideFlags: 0
@@ -2068,6 +2068,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d3af0621c1142a34891845829453ad69, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  State: 0
+  _player: {fileID: 585977709}
+  _controller: {fileID: 1706522757}
+  DetectDistance: 3
+  AttackDistance: 1.2
+  MoveSpeed: 5
+  AttackSpeed: 2
+  AttackTimer: 0
+  Health: 100
 --- !u!143 &1706522757
 CharacterController:
   m_ObjectHideFlags: 0
@@ -2555,7 +2564,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: New Text
+  m_text: 30 / 120
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}

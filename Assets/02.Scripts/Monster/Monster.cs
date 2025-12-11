@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class Monster : MonoBehaviour
@@ -26,7 +27,7 @@ public class Monster : MonoBehaviour
     //N개의 상태를 가지고 있고, 상태마다 행동이 다르다.
     #endregion
 
-    public EMonsterState State = EMonsterState.idle;
+    public EMonsterState State = EMonsterState.Idle;
 
     [SerializeField] private GameObject _player;
     [SerializeField] private CharacterController _controller;
@@ -44,7 +45,7 @@ public class Monster : MonoBehaviour
         //몬스터의 상태에 따라 다른 행동을 한다 (다른 메서드를 호출한다.)
         switch (State)
         {
-            case EMonsterState.idle:
+            case EMonsterState.Idle:
                 Idle();
                 break;
             case EMonsterState.Trace:
@@ -56,12 +57,7 @@ public class Monster : MonoBehaviour
             case EMonsterState.Attack:
                 Attack();
                 break;
-            case EMonsterState.Hit:
-                Hit();
-                break;
-            case EMonsterState.Death:
-                Death();
-                break;
+
         }
 
     }
@@ -91,6 +87,7 @@ public class Monster : MonoBehaviour
         if (distance <= AttackDistance)
         {
             State = EMonsterState.Attack;
+            Debug.Log("상태 전환 : Trace -> Attack");
         }
     }
     private void Comeback()
@@ -105,6 +102,7 @@ public class Monster : MonoBehaviour
         if (distance > AttackDistance)
         {
             State = EMonsterState.Trace;
+            Debug.Log("상태 전환 : Attack -> Trace");
             return;
         }
 
@@ -119,13 +117,38 @@ public class Monster : MonoBehaviour
         
 
     }
-    private void Hit()
-    {
 
+    public float Health = 100;
+    public bool TryTakeDamage(float damage)
+    {
+        if (State == EMonsterState.Death || State == EMonsterState.Hit)
+        {
+            return false;
+        }
+        Health -= damage;
+
+        if(Health > 0)
+        {
+            State = EMonsterState.Hit;
+        }
+        else
+        {
+            State = EMonsterState.Death;
+        }
+
+        return true;
     }
-    private void Death()
+    private IEnumerator Hit_Coroutine()
     {
-
+        // Todo. Hit 애니메이션 실행
+        yield return new WaitForSeconds(0.2f);
+        State = EMonsterState.Idle;
+    }
+    private IEnumerator Death_Coroutine()
+    {
+        // Todo. Death 애니메이션 실행
+        yield return new WaitForSeconds(2.0f);
+        Destroy(gameObject);
     }
 
 }
