@@ -9,6 +9,8 @@ public class PlayerGunFire : MonoBehaviour
     [SerializeField] private ParticleSystem _hitEffect;
     [SerializeField] private CameraRotate _cameraRotate;
 
+    [SerializeField] private Monster _monster;
+
     [Header("연사 속도")]
     private float _time = 0f;
     public float _delay = 3.5f;
@@ -76,6 +78,12 @@ public class PlayerGunFire : MonoBehaviour
                         if (monster != null)
                         {
                             monster.TryTakeDamage(10);
+                            //StartCoroutine(_monster.Hit_Coroutine());
+                        }
+                        Drum drum = hitInfo.collider.gameObject.GetComponent<Drum>();
+                        if(drum != null)
+                        {
+                            drum.TryTakeDamage(10);
                         }
 
                         _cameraRotate.AddRecoil(RecoilAmount);

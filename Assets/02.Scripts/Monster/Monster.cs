@@ -173,11 +173,12 @@ public class Monster : MonoBehaviour
 
         return true;
     }
-    private IEnumerator Hit_Coroutine()
+    public IEnumerator Hit_Coroutine()
     {
         // Todo. Hit 애니메이션 실행
         yield return new WaitForSeconds(0.2f);
         State = EMonsterState.Idle;
+        Debug.Log("몬스터가 데미지를 받았습니다.");
     }
     private IEnumerator Death_Coroutine()
     {
