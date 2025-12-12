@@ -1,4 +1,5 @@
 using System.Collections;
+using Unity.VisualScripting.Antlr3.Runtime.Misc;
 using UnityEngine;
 
 public class Monster : MonoBehaviour
@@ -31,6 +32,7 @@ public class Monster : MonoBehaviour
 
     [SerializeField] private GameObject _player;
     [SerializeField] private CharacterController _controller;
+    [SerializeField] private PlayerStats _stats;
 
     public float DetectDistance = 3.0f;
     public float AttackDistance = 1.2f;
@@ -38,7 +40,7 @@ public class Monster : MonoBehaviour
     public float MoveSpeed = 5.0f;
     public float AttackSpeed = 2f;
     public float AttackTimer = 0f;
-
+    public float AttackDamage = 20.0f;
 
     private void Update()
     {
@@ -112,6 +114,7 @@ public class Monster : MonoBehaviour
             AttackTimer = 0f;
             //플레이어를 공격하는 상태
             Debug.Log("플레이어 공격");
+            _stats.Health.Consume(AttackDamage);
 
         }
         
