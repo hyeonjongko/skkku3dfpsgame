@@ -1,10 +1,24 @@
 using UnityEngine;
 
+// GameManager에 추가
+
+
+// CursorManager 수정
 public class CursorManager : MonoBehaviour
 {
-    void Awake()
+    private EGameState _state;
+    void Update()
     {
-        LockCursor();
+        if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKey(KeyCode.Tab))
+        {
+            _state = EGameState.UIMode;
+            UnlockCursor();
+        }
+        if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyUp(KeyCode.Tab))
+        {
+            _state = EGameState.Playing;
+            LockCursor();
+        }
     }
 
     public void LockCursor()

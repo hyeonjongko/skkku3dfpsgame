@@ -169,16 +169,21 @@ public class Monster : MonoBehaviour
         // 현재 목표 순찰 지점
         Vector3 targetPosition = _patrolPoints[_currentPatrolIndex].position;
 
-        // 1. 방향을 구한다
-        Vector3 direction = (targetPosition - transform.position).normalized;
+        // 1. 방향을 구한다 (Y축 제외한 수평 방향)
+        Vector3 directionFlat = targetPosition - transform.position;
+        directionFlat.y = 0; // Y축 무시
+        directionFlat.Normalize();
 
         // 2. 이동한다
-        _controller.Move(direction * MoveSpeed * Time.deltaTime);
+        _controller.Move(directionFlat * MoveSpeed * Time.deltaTime);
 
-        // 3. 목표 지점에 도착했는지 확인
-        float distanceToTarget = Vector3.Distance(transform.position, targetPosition);
+        // 3. 목표 지점에 도착했는지 확인 (수평 거리만 계산)
+        Vector3 posFlat = new Vector3(transform.position.x, 0, transform.position.z);
+        Vector3 targetFlat = new Vector3(targetPosition.x, 0, targetPosition.z);
+        float distanceToTarget = Vector3.Distance(posFlat, targetFlat);
 
-        if (distanceToTarget <= _comebackPosoffset)
+
+        if (distanceToTarget <= _patrolArriveDistance)
         {
             // 순찰 지점에 도착 - 대기 시작
             _isWaitingAtPatrolPoint = true;

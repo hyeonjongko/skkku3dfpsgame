@@ -1,6 +1,7 @@
 
 using System.Collections;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class PlayerGunFire : MonoBehaviour
 {
@@ -32,6 +33,7 @@ public class PlayerGunFire : MonoBehaviour
     [Header("넉백")]
     public float BulletKnockbackForce = 3f;
 
+
     public float ReloadProgress => _reloadProgress;
     public bool IsReloading => _isReloading;
 
@@ -47,9 +49,13 @@ public class PlayerGunFire : MonoBehaviour
 
     private void Update()
     {
-                //1. 마우스 왼쪽 버튼이 눌린다면
-                if (Input.GetMouseButton(0) && !IsReloading && GameManager.Instance.State == EGameState.Playing)
+        //1. 마우스 왼쪽 버튼이 눌린다면
+        if (Input.GetMouseButton(0) && !IsReloading && GameManager.Instance.State == EGameState.Playing)
         {
+            // UI 위에 마우스가 있으면 총을 발사하지 않음
+            if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
+                return;
+
             if (_bulletCount > 0)
             {
                 if (_time >= _delay)
@@ -76,8 +82,8 @@ public class PlayerGunFire : MonoBehaviour
 
                         _hitEffect.Play();
 
-                       //태그랑 레이어 비교 안한 이유?
-                       Monster monster = hitInfo.collider.gameObject.GetComponent<Monster>();
+                        //태그랑 레이어 비교 안한 이유?
+                        Monster monster = hitInfo.collider.gameObject.GetComponent<Monster>();
                         if (monster != null)
                         {
                             Vector3 knockbackDirection = (monster.transform.position - _fireTransform.position).normalized;
@@ -85,7 +91,7 @@ public class PlayerGunFire : MonoBehaviour
                             //StartCoroutine(_monster.Hit_Coroutine());
                         }
                         Drum drum = hitInfo.collider.gameObject.GetComponent<Drum>();
-                        if(drum != null)
+                        if (drum != null)
                         {
                             drum.TryTakeDamage(10);
                         }
