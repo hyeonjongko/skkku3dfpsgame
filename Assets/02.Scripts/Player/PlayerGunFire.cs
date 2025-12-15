@@ -1,6 +1,7 @@
 
 using System.Collections;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class PlayerGunFire : MonoBehaviour
 {
@@ -8,6 +9,8 @@ public class PlayerGunFire : MonoBehaviour
     [SerializeField] private Transform _fireTransform;
     [SerializeField] private ParticleSystem _hitEffect;
     [SerializeField] private CameraRotate _cameraRotate;
+
+    [SerializeField] private Monster _monster;
 
     [Header("연사 속도")]
     private float _time = 0f;
@@ -27,6 +30,10 @@ public class PlayerGunFire : MonoBehaviour
     [Header("반동")]
     public float RecoilAmount = 1.5f;
 
+    [Header("넉백")]
+    public float BulletKnockbackForce = 3f;
+
+
     public float ReloadProgress => _reloadProgress;
     public bool IsReloading => _isReloading;
 
@@ -43,8 +50,12 @@ public class PlayerGunFire : MonoBehaviour
     private void Update()
     {
         //1. 마우스 왼쪽 버튼이 눌린다면
-        if (Input.GetMouseButton(0) && !IsReloading)
+        if (Input.GetMouseButton(0) && !IsReloading && GameManager.Instance.State == EGameState.Playing)
         {
+            // UI 위에 마우스가 있으면 총을 발사하지 않음
+            if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
+                return;
+
             if (_bulletCount > 0)
             {
                 if (_time >= _delay)
@@ -57,7 +68,7 @@ public class PlayerGunFire : MonoBehaviour
                     bool isHit = Physics.Raycast(ray, out hitInfo);
                     if (isHit)
                     {
-                        //5. 충돌했다면...피격 이펙트 표시
+                        //5. 충돌했다면...피격한 오브젝트 이름 출력
                         Debug.Log(hitInfo.transform.name);
 
                         //파티클 생성과 플레이 방식
@@ -71,11 +82,18 @@ public class PlayerGunFire : MonoBehaviour
 
                         _hitEffect.Play();
 
-                       //태그랑 레이어 비교 안한 이유?
-                       Monster monster = hitInfo.collider.gameObject.GetComponent<Monster>();
+                        //태그랑 레이어 비교 안한 이유?
+                        Monster monster = hitInfo.collider.gameObject.GetComponent<Monster>();
                         if (monster != null)
                         {
-                            monster.TryTakeDamage(10);
+                            Vector3 knockbackDirection = (monster.transform.position - _fireTransform.position).normalized;
+                            monster.TryTakeDamage(10, knockbackDirection * BulletKnockbackForce);
+                            //StartCoroutine(_monster.Hit_Coroutine());
+                        }
+                        Drum drum = hitInfo.collider.gameObject.GetComponent<Drum>();
+                        if (drum != null)
+                        {
+                            drum.TryTakeDamage(10);
                         }
 
                         _cameraRotate.AddRecoil(RecoilAmount);

@@ -19,6 +19,8 @@ public class CameraFollow : MonoBehaviour
 
         transform.position = FPSTarget.position;
 
+        if (GameManager.Instance.State != EGameState.Playing) return;
+
         if (Input.GetKeyDown(KeyCode.T))
         {
             _isFPS = !_isFPS;

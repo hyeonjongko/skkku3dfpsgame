@@ -8,8 +8,8 @@ public class CameraRotate : MonoBehaviour
     public float RotationSpeed = 200f; // 0 ~ 360
 
     [Header("반동 설정")]
-    public float MaxRecoilAngle = 30f; 
-    public float ShakeAmount = 1.5f;   
+    public float MaxRecoilAngle = 30f;
+    public float ShakeAmount = 1.5f;
     public float ShakeRecoverySpeed = 8f;
     private float _currentShakeX = 0f;
 
@@ -28,7 +28,7 @@ public class CameraRotate : MonoBehaviour
         }
 
         //게임이 시작하면 y축이 0도에서 시작 -> -1도
-        if (!Input.GetMouseButton(2))
+        if (GameManager.Instance.State != EGameState.Playing)
         {
             return;
         }
