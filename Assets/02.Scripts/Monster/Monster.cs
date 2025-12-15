@@ -34,7 +34,7 @@ public class Monster : MonoBehaviour
 
     [SerializeField] private GameObject _player;
     [SerializeField] private CharacterController _controller;
-    [SerializeField] private PlayerStats _stats;
+    [SerializeField] private PlayerStats _playerStats;
 
 
     public float DetectDistance = 2.0f;
@@ -56,7 +56,8 @@ public class Monster : MonoBehaviour
 
     private void Update()
     {
-        if (GameManager.Instance.State == EGameState.Playing) return;
+        if (GameManager.Instance.State != EGameState.Playing) return;
+
         //몬스터의 상태에 따라 다른 행동을 한다 (다른 메서드를 호출한다.)
         switch (State)
         {
@@ -150,7 +151,7 @@ public class Monster : MonoBehaviour
             AttackTimer = 0f;
             //플레이어를 공격하는 상태
             Debug.Log("플레이어 공격");
-            _stats.Health.Consume(AttackDamage);
+            _playerStats.Health.Consume(AttackDamage);
 
         }
         

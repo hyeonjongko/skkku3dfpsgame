@@ -44,8 +44,8 @@ public class PlayerGunFire : MonoBehaviour
 
     private void Update()
     {
-        //1. 마우스 왼쪽 버튼이 눌린다면
-        if (Input.GetMouseButton(0) && !IsReloading)
+                //1. 마우스 왼쪽 버튼이 눌린다면
+                if (Input.GetMouseButton(0) && !IsReloading && GameManager.Instance.State == EGameState.Playing)
         {
             if (_bulletCount > 0)
             {

@@ -29,7 +29,7 @@ public class PlayerBombFire : MonoBehaviour
 
     private void Update()
     {
-        if(Input.GetMouseButtonDown(1))
+        if(Input.GetMouseButtonDown(1) && GameManager.Instance.State == EGameState.Playing)
         {
             _bombCount--;
             if(_bombCount >= 0)

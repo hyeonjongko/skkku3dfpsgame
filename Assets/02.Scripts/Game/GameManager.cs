@@ -12,6 +12,8 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] private TextMeshProUGUI _stateTextUI;
 
+    [SerializeField ] private float _readyTime = 2.0f;
+    private float _startTextTime = 0.5f;
     private void Awake()
     {
         _instance = this;
@@ -27,11 +29,11 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator StartToPlay_Coroutuine()
     {
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(_readyTime);
 
         _stateTextUI.text = "시작";
 
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(_startTextTime);
 
         _state = EGameState.Playing;
 
