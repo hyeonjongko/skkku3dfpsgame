@@ -57,6 +57,7 @@ public class Drum : MonoBehaviour
             {
                 drum.TryTakeDamage(_damage.Value);
             }
+
         }
 
         yield return new WaitForSeconds(3f);

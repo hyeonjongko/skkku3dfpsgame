@@ -49,6 +49,11 @@ public class Monster : MonoBehaviour
     private Vector3 _comebackPosition;
     private float _comebackPosoffset = 0.5f;
 
+    [Header("넉백")]
+    [SerializeField] private float _knockbackForce = 5f;
+    [SerializeField] private float _knockbackDuration = 0.2f;
+    private Vector3 _knockbackVelocity = Vector3.zero;
+
     private void Start()
     {
         _comebackPosition = transform.position;
@@ -57,6 +62,13 @@ public class Monster : MonoBehaviour
     private void Update()
     {
         if (GameManager.Instance.State != EGameState.Playing) return;
+
+        // 넉백 적용
+        if (_knockbackVelocity.magnitude > 0.1f)
+        {
+            _controller.Move(_knockbackVelocity * Time.deltaTime);
+            _knockbackVelocity = Vector3.Lerp(_knockbackVelocity, Vector3.zero, Time.deltaTime / _knockbackDuration);
+        }
 
         //몬스터의 상태에 따라 다른 행동을 한다 (다른 메서드를 호출한다.)
         switch (State)
@@ -159,7 +171,7 @@ public class Monster : MonoBehaviour
     }
 
     //public float Health = 100;
-    public bool TryTakeDamage(float damage)
+    public bool TryTakeDamage(float damage, Vector3 knockbackDirection)
     {
         if (State == EMonsterState.Death || State == EMonsterState.Hit)
         {
@@ -168,7 +180,12 @@ public class Monster : MonoBehaviour
 
         Health.Consume(damage);
 
-        if(Health.Value > 0)
+        if (knockbackDirection != Vector3.zero)
+        {
+            _knockbackVelocity = knockbackDirection.normalized * _knockbackForce;
+        }
+
+        if (Health.Value > 0)
         {
             Debug.Log($"상태 전환: {State} -> Hit");
             State = EMonsterState.Hit;
@@ -184,6 +201,11 @@ public class Monster : MonoBehaviour
         }
 
         return true;
+    }
+
+    public bool TryTakeDamage(float damage)
+    {
+        return TryTakeDamage(damage, Vector3.zero);
     }
     public IEnumerator Hit_Coroutine()
     {

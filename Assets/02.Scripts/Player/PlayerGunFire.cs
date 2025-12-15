@@ -29,6 +29,9 @@ public class PlayerGunFire : MonoBehaviour
     [Header("반동")]
     public float RecoilAmount = 1.5f;
 
+    [Header("넉백")]
+    public float BulletKnockbackForce = 3f;
+
     public float ReloadProgress => _reloadProgress;
     public bool IsReloading => _isReloading;
 
@@ -59,7 +62,7 @@ public class PlayerGunFire : MonoBehaviour
                     bool isHit = Physics.Raycast(ray, out hitInfo);
                     if (isHit)
                     {
-                        //5. 충돌했다면...피격 이펙트 표시
+                        //5. 충돌했다면...피격한 오브젝트 이름 출력
                         Debug.Log(hitInfo.transform.name);
 
                         //파티클 생성과 플레이 방식
@@ -77,7 +80,8 @@ public class PlayerGunFire : MonoBehaviour
                        Monster monster = hitInfo.collider.gameObject.GetComponent<Monster>();
                         if (monster != null)
                         {
-                            monster.TryTakeDamage(10);
+                            Vector3 knockbackDirection = (monster.transform.position - _fireTransform.position).normalized;
+                            monster.TryTakeDamage(10, knockbackDirection * BulletKnockbackForce);
                             //StartCoroutine(_monster.Hit_Coroutine());
                         }
                         Drum drum = hitInfo.collider.gameObject.GetComponent<Drum>();
