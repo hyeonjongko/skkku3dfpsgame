@@ -150,7 +150,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _explosionEffectPrefab: {fileID: 1620140131458704099, guid: 57e5b83dfee152a47aedf7d83c83e9f5, type: 3}
-  ExplosionRadius: 4
+  ExplosionRadius: 2
   Damage: 1000
   ExplosionKnockbackForce: 10
   ExplosionUpwardForce: 10

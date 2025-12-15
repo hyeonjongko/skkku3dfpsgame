@@ -1,6 +1,7 @@
 using System.Collections;
 using Unity.VisualScripting.Antlr3.Runtime.Misc;
 using UnityEngine;
+using static PlayerMove;
 
 public class Monster : MonoBehaviour
 {
@@ -28,7 +29,7 @@ public class Monster : MonoBehaviour
     //N개의 상태를 가지고 있고, 상태마다 행동이 다르다.
     #endregion
 
-    public EMonsterState State = EMonsterState.Idle;
+    public EMonsterState State = EMonsterState.Patrol;
 
     public ConsumableStat Health;
 
@@ -39,7 +40,7 @@ public class Monster : MonoBehaviour
 
     public float DetectDistance = 2.0f;
     public float AttackDistance = 1.2f;
-    
+
     public float MoveSpeed = 5.0f;
     public float AttackSpeed = 2f;
     public float AttackTimer = 0f;
@@ -48,6 +49,18 @@ public class Monster : MonoBehaviour
     [Header("복귀")]
     private Vector3 _comebackPosition;
     private float _comebackPosoffset = 0.5f;
+
+    [Header("순찰")]
+    [SerializeField] private Transform[] _patrolPoints; // 순찰 지점들
+    [SerializeField] private float _patrolWaitTime = 2f; // 각 지점에서 대기 시간
+    [SerializeField] private float _patrolArriveDistance = 0.5f;
+    private int _currentPatrolIndex = 0; // 현재 목표 순찰 지점 인덱스
+    private float _patrolWaitTimer = 0f; // 대기 타이머
+    private bool _isWaitingAtPatrolPoint = false; // 순찰 지점에서 대기 중인지
+    [Header("중력")]
+    private float Gravity;
+    private float _yVelocity = 0f;
+
 
     [Header("넉백")]
     [SerializeField] private float _knockbackForce = 5f;
@@ -63,6 +76,9 @@ public class Monster : MonoBehaviour
     {
         if (GameManager.Instance.State != EGameState.Playing) return;
 
+        // 0. 중력을 누적한다.
+        _yVelocity += Gravity * Time.deltaTime;
+
         // 넉백 적용
         if (_knockbackVelocity.magnitude > 0.1f)
         {
@@ -76,6 +92,9 @@ public class Monster : MonoBehaviour
             case EMonsterState.Idle:
                 Idle();
                 break;
+            case EMonsterState.Patrol:
+                Patrol();
+                break;
             case EMonsterState.Trace:
                 Trace();
                 break;
@@ -85,6 +104,7 @@ public class Monster : MonoBehaviour
             case EMonsterState.Attack:
                 Attack();
                 break;
+
 
         }
 
@@ -99,7 +119,73 @@ public class Monster : MonoBehaviour
             State = EMonsterState.Trace;
             Debug.Log("상태 전환 : Idle -> Trace");
         }
+        _patrolWaitTimer += Time.deltaTime;
+
+        if (_patrolWaitTimer >= _patrolWaitTime)
+        {
+            State = EMonsterState.Patrol;
+            Debug.Log("상태 전환 : Patrol -> Idle");
+        }
+
     }
+
+    private void Patrol()
+    {
+        // 순찰 지점이 설정되지 않았다면 Idle 상태로 전환
+        if (_patrolPoints == null || _patrolPoints.Length == 0)
+        {
+            State = EMonsterState.Idle;
+            Debug.Log("상태 전환 : Patrol -> Idle (순찰 지점 없음)");
+            return;
+        }
+
+        // 플레이어 감지 체크
+        if (Vector3.Distance(transform.position, _player.transform.position) <= DetectDistance)
+        {
+            State = EMonsterState.Trace;
+            _isWaitingAtPatrolPoint = false;
+            _patrolWaitTimer = 0f;
+            Debug.Log("상태 전환 : Patrol -> Trace");
+            return;
+        }
+
+        // 순찰 지점에서 대기 중이라면
+        if (_isWaitingAtPatrolPoint)
+        {
+            _patrolWaitTimer += Time.deltaTime;
+
+            // 대기 시간이 끝나면 다음 지점으로 이동
+            if (_patrolWaitTimer >= _patrolWaitTime)
+            {
+                _isWaitingAtPatrolPoint = false;
+                _patrolWaitTimer = 0f;
+
+                // 다음 순찰 지점으로 인덱스 증가 (순환)
+                _currentPatrolIndex = (_currentPatrolIndex + 1) % _patrolPoints.Length;
+            }
+            return;
+        }
+
+        // 현재 목표 순찰 지점
+        Vector3 targetPosition = _patrolPoints[_currentPatrolIndex].position;
+
+        // 1. 방향을 구한다
+        Vector3 direction = (targetPosition - transform.position).normalized;
+
+        // 2. 이동한다
+        _controller.Move(direction * MoveSpeed * Time.deltaTime);
+
+        // 3. 목표 지점에 도착했는지 확인
+        float distanceToTarget = Vector3.Distance(transform.position, targetPosition);
+
+        if (distanceToTarget <= _comebackPosoffset)
+        {
+            // 순찰 지점에 도착 - 대기 시작
+            _isWaitingAtPatrolPoint = true;
+            _patrolWaitTimer = 0f;
+        }
+    }
+
     private void Trace()
     {
         //플레이어를 쫓아간다
@@ -137,8 +223,8 @@ public class Monster : MonoBehaviour
             return;
         }
         float distanceComeback = Vector3.Distance(transform.position, _comebackPosition);
-        
-        if(distanceComeback <= _comebackPosoffset)
+
+        if (distanceComeback <= _comebackPosoffset)
         {
             State = EMonsterState.Idle;
             Debug.Log("상태 전환 : Comeback -> Idle");
@@ -166,7 +252,7 @@ public class Monster : MonoBehaviour
             _playerStats.Health.Consume(AttackDamage);
 
         }
-        
+
 
     }
 

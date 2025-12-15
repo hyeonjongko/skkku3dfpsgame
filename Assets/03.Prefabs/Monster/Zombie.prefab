@@ -320,6 +320,10 @@ MonoBehaviour:
   AttackSpeed: 2
   AttackTimer: 0
   AttackDamage: 20
+  _patrolPoints:
+  - {fileID: 0}
+  - {fileID: 0}
+  _patrolWaitTime: 2
   _knockbackForce: 500
   _knockbackDuration: 0.2
 --- !u!114 &3554716067757334713
