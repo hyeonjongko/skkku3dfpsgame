@@ -30,9 +30,12 @@ public class Monster : MonoBehaviour
 
     public EMonsterState State = EMonsterState.Idle;
 
+    public ConsumableStat Health;
+
     [SerializeField] private GameObject _player;
     [SerializeField] private CharacterController _controller;
     [SerializeField] private PlayerStats _stats;
+
 
     public float DetectDistance = 2.0f;
     public float AttackDistance = 1.2f;
@@ -153,22 +156,29 @@ public class Monster : MonoBehaviour
 
     }
 
-    public float Health = 100;
+    //public float Health = 100;
     public bool TryTakeDamage(float damage)
     {
         if (State == EMonsterState.Death || State == EMonsterState.Hit)
         {
             return false;
         }
-        Health -= damage;
 
-        if(Health > 0)
+        Health.Consume(damage);
+
+        if(Health.Value > 0)
         {
+            Debug.Log($"상태 전환: {State} -> Hit");
             State = EMonsterState.Hit;
+
+            StartCoroutine(Hit_Coroutine());
         }
         else
         {
+            Debug.Log($"상태 전환: {State} -> Death");
             State = EMonsterState.Death;
+
+            StartCoroutine(Death_Coroutine());
         }
 
         return true;
