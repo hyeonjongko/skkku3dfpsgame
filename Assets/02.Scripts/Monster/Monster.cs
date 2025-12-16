@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using Unity.VisualScripting.Antlr3.Runtime.Misc;
 using UnityEngine;
@@ -247,17 +248,45 @@ public class Monster : MonoBehaviour
 
     private void Jump()
     {
+        // 순간이동
         _agent.isStopped = true;
         _agent.ResetPath();
         _agent.CompleteOffMeshLink();
 
-        transform.position = _jumpEndPosition + new Vector3(0, 0.5f);
-        State = EMonsterState.Trace;
+        StartCoroutine(Jump_Coroutine());
 
-        //1. 점프 거리와 내 이동 속도를 계산해서 점프 시간을 구한다.
-        //2. 점프 시간동안 포물선으로 이동한다.
-        //3. 이동 후 다시 Trace
+
+        // 1. 점프 거리와 내 이동속를 계산해서 점프 시간을 구한다.
+        // 2. 점프 시간동안 포물선으로 이동한다.
+        // 3. 이동 후 다시 Trace
     }
+
+    private IEnumerator Jump_Coroutine()
+    {
+
+        float distance = Vector3.Distance(transform.position, _jumpEndPosition);
+        float jumpTime = distance / MoveSpeed;
+        float jumpHeight = Mathf.Max(1f, distance * 0.3f);
+
+        float elapsedTime = 0f;
+
+        while (elapsedTime < jumpTime)
+        {
+            float t = elapsedTime / jumpTime;
+
+            Vector3 newPosition = Vector3.Lerp(_jumpStartPosition, _jumpEndPosition, t);
+            newPosition.y += Math.Sign(t * Mathf.PI) * jumpHeight;
+            transform.position = newPosition;
+
+            elapsedTime += Time.deltaTime;
+
+            yield return null;
+        }
+
+        transform.position = _jumpEndPosition;
+        State = EMonsterState.Trace;
+    }
+
     private void Comeback()
     {
         Vector3 direction = (_comebackPosition - transform.position).normalized;

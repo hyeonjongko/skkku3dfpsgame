@@ -5,6 +5,8 @@ using UnityEngine;
 //마우스를 조작하면 카메라를 그 방향으로 회전하고 싶다.
 public class CameraRotate : MonoBehaviour
 {
+    CameraFollow _cameraView;
+
     public float RotationSpeed = 200f; // 0 ~ 360
 
     [Header("반동 설정")]
@@ -16,6 +18,11 @@ public class CameraRotate : MonoBehaviour
     // 유니티는  0 ~ 360도 체계이므로 우리가 따로 저장할 -360 ~ 360 체계로 누적할 변수
     private float _accumulationX = 0;
     private float _accumulationY = 0;
+
+    private void Awake()
+    {
+        _cameraView = GetComponent<CameraFollow>();
+    }
     private void Update()
     {
         if (Mathf.Abs(_currentShakeX) > 0.01f)
@@ -32,6 +39,8 @@ public class CameraRotate : MonoBehaviour
         {
             return;
         }
+
+        if (_cameraView.IsTopView) return;
         // 1.마우스 입력 받기
         float mouseX = Input.GetAxis("Mouse X");
         float mouseY = Input.GetAxis("Mouse Y");
