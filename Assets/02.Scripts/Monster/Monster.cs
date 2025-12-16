@@ -1,6 +1,8 @@
 using System.Collections;
 using Unity.VisualScripting.Antlr3.Runtime.Misc;
 using UnityEngine;
+using UnityEngine.AI;
+using UnityEngine.UIElements;
 using static PlayerMove;
 
 public class Monster : MonoBehaviour
@@ -35,6 +37,8 @@ public class Monster : MonoBehaviour
 
     [SerializeField] private GameObject _player;
     [SerializeField] private CharacterController _controller;
+    [SerializeField] private NavMeshAgent _agent;
+
     [SerializeField] private PlayerStats _playerStats;
 
 
@@ -67,9 +71,14 @@ public class Monster : MonoBehaviour
     [SerializeField] private float _knockbackDuration = 0.2f;
     private Vector3 _knockbackVelocity = Vector3.zero;
 
+    private Vector3 _jumpStartPosition;
+    private Vector3 _jumpEndPosition;
+
     private void Start()
     {
         _comebackPosition = transform.position;
+        _agent.speed = MoveSpeed;
+        _agent.stoppingDistance = AttackDistance;
     }
 
     private void Update()
@@ -103,6 +112,9 @@ public class Monster : MonoBehaviour
                 break;
             case EMonsterState.Attack:
                 Attack();
+                break;
+            case EMonsterState.Jump:
+                Jump();
                 break;
 
 
@@ -196,11 +208,14 @@ public class Monster : MonoBehaviour
         //플레이어를 쫓아간다
         //Todo. Run 애니메이션 실행
 
-        //1. 방향을 구한다.
-        Vector3 direction = (_player.transform.position - transform.position).normalized;
-        _controller.Move(direction * MoveSpeed * Time.deltaTime);
-
         float distance = Vector3.Distance(transform.position, _player.transform.position);
+
+        //1. 방향을 구한다.
+        //Vector3 direction = (_player.transform.position - transform.position).normalized;
+        //_controller.Move(direction * MoveSpeed * Time.deltaTime);
+
+        //방향 설정도 필요 없이 도착지만 설정해주면 네비게이션 시스템에 의해 자동으로 이동한다.
+        _agent.SetDestination(_player.transform.position);
 
         //플레이어와의 거리가 공격 범위보다 가깝다면
         if (distance <= AttackDistance)
@@ -208,11 +223,40 @@ public class Monster : MonoBehaviour
             State = EMonsterState.Attack;
             Debug.Log("상태 전환 : Trace -> Attack");
         }
-        if (Vector3.Distance(transform.position, _player.transform.position) > DetectDistance)
+
+        if (_agent.isOnOffMeshLink)
         {
-            State = EMonsterState.Comeback;
-            Debug.Log("상태 전환 : Trace -> Comeback");
+            Debug.Log("링크 만남");
+            OffMeshLinkData LinkData = _agent.currentOffMeshLinkData;
+            _jumpStartPosition = LinkData.startPos;
+            _jumpEndPosition = LinkData.endPos;
+
+            if (_jumpEndPosition.y > _jumpStartPosition.y)
+            {
+                Debug.Log("상태 전환 : Trace -> Jump");
+                State = EMonsterState.Jump;
+                return;
+            }
         }
+        //if (Vector3.Distance(transform.position, _player.transform.position) > DetectDistance)
+        //{
+        //    State = EMonsterState.Comeback;
+        //    Debug.Log("상태 전환 : Trace -> Comeback");
+        //}
+    }
+
+    private void Jump()
+    {
+        _agent.isStopped = true;
+        _agent.ResetPath();
+        _agent.CompleteOffMeshLink();
+
+        transform.position = _jumpEndPosition + new Vector3(0, 0.5f);
+        State = EMonsterState.Trace;
+
+        //1. 점프 거리와 내 이동 속도를 계산해서 점프 시간을 구한다.
+        //2. 점프 시간동안 포물선으로 이동한다.
+        //3. 이동 후 다시 Trace
     }
     private void Comeback()
     {
@@ -271,6 +315,9 @@ public class Monster : MonoBehaviour
         }
 
         Health.Consume(damage);
+
+        _agent.isStopped = true; // 이동 일시정지
+        _agent.ResetPath();      // 경로(=목적지) 삭제
 
         if (knockbackDirection != Vector3.zero)
         {

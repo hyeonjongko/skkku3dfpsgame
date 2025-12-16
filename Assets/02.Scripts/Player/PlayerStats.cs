@@ -20,6 +20,8 @@ public class PlayerStats : MonoBehaviour
     }
     private void Update()
     {
+        if (Health.Value < 0) return;
+
         float dealtaTime = Time.deltaTime;
 
         Health.Regenerate(dealtaTime);
