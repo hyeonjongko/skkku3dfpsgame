@@ -254,7 +254,8 @@ public class Monster : MonoBehaviour
             AttackTimer = 0f;
             //플레이어를 공격하는 상태
             Debug.Log("플레이어 공격");
-            _playerStats.Health.Consume(AttackDamage);
+            //_playerStats.Health.Consume(AttackDamage);
+            _playerStats.TryTakeDamage(AttackDamage);
 
         }
 

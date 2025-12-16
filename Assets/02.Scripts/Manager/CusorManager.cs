@@ -9,6 +9,10 @@ public class CursorManager : MonoBehaviour
     private EGameState _state;
     void Update()
     {
+        if(_state == EGameState.Ready)
+        {
+            LockCursor();
+        }
         if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKey(KeyCode.Tab))
         {
             _state = EGameState.UIMode;
