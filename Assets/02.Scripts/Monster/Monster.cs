@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using Unity.VisualScripting.Antlr3.Runtime.Misc;
+using UnityEditor.Animations;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UIElements;
@@ -32,15 +33,18 @@ public class Monster : MonoBehaviour
     //N개의 상태를 가지고 있고, 상태마다 행동이 다르다.
     #endregion
 
-    public EMonsterState State = EMonsterState.Patrol;
+    public EMonsterState State = EMonsterState.Idle;
 
     public ConsumableStat Health;
 
     [SerializeField] private GameObject _player;
     [SerializeField] private CharacterController _controller;
     [SerializeField] private NavMeshAgent _agent;
+    [SerializeField] private Animator _animator;
 
     [SerializeField] private PlayerStats _playerStats;
+
+    private MonsterAttack _monsterAttack;
 
 
     public float DetectDistance = 2.0f;
@@ -75,6 +79,14 @@ public class Monster : MonoBehaviour
     private Vector3 _jumpStartPosition;
     private Vector3 _jumpEndPosition;
 
+    private void Awake()
+    {
+        if(_animator == null)
+        {
+            _animator = GetComponentInChildren<Animator>();
+        }
+        _monsterAttack = GetComponentInChildren<MonsterAttack>();
+    }
     private void Start()
     {
         _comebackPosition = transform.position;
@@ -130,6 +142,7 @@ public class Monster : MonoBehaviour
         if (Vector3.Distance(transform.position, _player.transform.position) <= DetectDistance)
         {
             State = EMonsterState.Trace;
+            _animator.SetTrigger("IdleToTrace");
             Debug.Log("상태 전환 : Idle -> Trace");
         }
         _patrolWaitTimer += Time.deltaTime;
@@ -137,7 +150,8 @@ public class Monster : MonoBehaviour
         if (_patrolWaitTimer >= _patrolWaitTime)
         {
             State = EMonsterState.Patrol;
-            Debug.Log("상태 전환 : Patrol -> Idle");
+            _animator.SetTrigger("IdleToPatrol");
+            Debug.Log("상태 전환 : Idle -> Patrol");
         }
 
     }
@@ -156,6 +170,7 @@ public class Monster : MonoBehaviour
         if (Vector3.Distance(transform.position, _player.transform.position) <= DetectDistance)
         {
             State = EMonsterState.Trace;
+            _animator.SetTrigger("PatrolToTrace");
             _isWaitingAtPatrolPoint = false;
             _patrolWaitTimer = 0f;
             Debug.Log("상태 전환 : Patrol -> Trace");
@@ -324,11 +339,13 @@ public class Monster : MonoBehaviour
         AttackTimer += Time.deltaTime;
         if (AttackTimer >= AttackSpeed)
         {
+            _animator.SetTrigger("Attack");
             AttackTimer = 0f;
             //플레이어를 공격하는 상태
             Debug.Log("플레이어 공격");
+            _monsterAttack.PlayerAttack();
             //_playerStats.Health.Consume(AttackDamage);
-            _playerStats.TryTakeDamage(AttackDamage);
+            //_playerStats.TryTakeDamage(AttackDamage);
 
         }
 
@@ -377,7 +394,7 @@ public class Monster : MonoBehaviour
     }
     public IEnumerator Hit_Coroutine()
     {
-        // Todo. Hit 애니메이션 실행
+        _animator.SetTrigger("Hit");
         yield return new WaitForSeconds(0.2f);
         State = EMonsterState.Idle;
         Debug.Log("몬스터가 데미지를 받았습니다.");
