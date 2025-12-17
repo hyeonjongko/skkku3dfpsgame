@@ -254,11 +254,12 @@ public class Monster : MonoBehaviour
                 return;
             }
         }
-        //if (Vector3.Distance(transform.position, _player.transform.position) > DetectDistance)
-        //{
-        //    State = EMonsterState.Comeback;
-        //    Debug.Log("상태 전환 : Trace -> Comeback");
-        //}
+        if (Vector3.Distance(transform.position, _player.transform.position) > DetectDistance)
+        {
+            _animator.SetTrigger("TraceToComeback");
+            State = EMonsterState.Comeback;
+            Debug.Log("상태 전환 : Trace -> Comeback");
+        }
     }
 
     private void Jump()
@@ -311,6 +312,7 @@ public class Monster : MonoBehaviour
 
         if (distance <= DetectDistance)
         {
+            _animator.SetTrigger("ComebackToTrace");
             State = EMonsterState.Trace;
             Debug.Log("상태 전환 : Comeback -> Trace");
             return;
@@ -319,6 +321,7 @@ public class Monster : MonoBehaviour
 
         if (distanceComeback <= _comebackPosoffset)
         {
+            _animator.SetTrigger("ComebackToIdle");
             State = EMonsterState.Idle;
             Debug.Log("상태 전환 : Comeback -> Idle");
         }

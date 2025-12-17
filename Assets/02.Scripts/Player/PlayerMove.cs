@@ -16,6 +16,8 @@ public class PlayerMove : MonoBehaviour
 
     public MoveConfig _config;
 
+    private Animator _animator;
+
 
     private CharacterController _controller;
     private PlayerStats _stats;
@@ -28,6 +30,7 @@ public class PlayerMove : MonoBehaviour
     {
         _controller = GetComponent<CharacterController>();
         _stats = GetComponent<PlayerStats>();
+        _animator = GetComponentInChildren<Animator>();
     }
 
     private void Update()
@@ -36,7 +39,7 @@ public class PlayerMove : MonoBehaviour
         _yVelocity += _config.Gravity * Time.deltaTime;
 
         // 1. 키보드 입력 받기
-        float x = Input.GetAxis("Horizontal");
+        float x = Input.GetAxis("Horizontal"); // -1 ~ 1로  점차 변함
         float y = Input.GetAxis("Vertical");
 
         // 2. 입력에 따른 방향 구하기 
@@ -45,8 +48,9 @@ public class PlayerMove : MonoBehaviour
 
         // - 글로벌 좌표 방향을 구한다. 
         Vector3 direction = new Vector3(x, 0, y);
-        direction.Normalize();
+        _animator.SetFloat("Speed", direction.magnitude);
 
+        direction.Normalize();
 
         if(GameManager.Instance.State == EGameState.Playing)
         {
