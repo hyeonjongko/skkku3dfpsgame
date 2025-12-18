@@ -13,10 +13,13 @@ public class PlayerStats : MonoBehaviour
     public ValueStat JumpPower;
 
     public Image BloodEffect;
+
+    [SerializeField] private Animator _animator;
     private void Start()
     {
         Health.Initialize();
         Stamina.Initialize();
+        _animator = GetComponentInChildren<Animator>();
     }
     private void Update()
     {
@@ -35,7 +38,11 @@ public class PlayerStats : MonoBehaviour
 
         Health.Consume(damage);
 
+
         StartCoroutine(BloodEffect_Coroutine());
+
+        //플레이어 레이어 가중치 적용
+        _animator.SetLayerWeight(2, Health.Value / Health.MaxValue);
 
         return true;
     }
