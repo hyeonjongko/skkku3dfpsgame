@@ -254,12 +254,12 @@ public class Monster : MonoBehaviour
                 return;
             }
         }
-        if (Vector3.Distance(transform.position, _player.transform.position) > DetectDistance)
-        {
-            _animator.SetTrigger("TraceToComeback");
-            State = EMonsterState.Comeback;
-            Debug.Log("상태 전환 : Trace -> Comeback");
-        }
+        //if (Vector3.Distance(transform.position, _player.transform.position) > DetectDistance)
+        //{
+        //    _animator.SetTrigger("TraceToComeback");
+        //    State = EMonsterState.Comeback;
+        //    Debug.Log("상태 전환 : Trace -> Comeback");
+        //}
     }
 
     private void Jump()
@@ -279,10 +279,9 @@ public class Monster : MonoBehaviour
 
     private IEnumerator Jump_Coroutine()
     {
-
-        float distance = Vector3.Distance(transform.position, _jumpEndPosition);
+        float distance = Vector3.Distance(_jumpStartPosition, _jumpEndPosition);
         float jumpTime = distance / MoveSpeed;
-        float jumpHeight = Mathf.Max(1f, distance * 0.3f);
+        float jumpHeight = Mathf.Max(1.5f, distance * 0.5f);  // 높이를 조금 더 높게
 
         float elapsedTime = 0f;
 
@@ -290,17 +289,23 @@ public class Monster : MonoBehaviour
         {
             float t = elapsedTime / jumpTime;
 
+            // 수평 이동 (Linear)
             Vector3 newPosition = Vector3.Lerp(_jumpStartPosition, _jumpEndPosition, t);
-            newPosition.y += Math.Sign(t * Mathf.PI) * jumpHeight;
+
+            // 수직 이동 (포물선) - 0에서 시작해서 중간에 최고점, 다시 0으로
+            float height = Mathf.Sin(t * Mathf.PI) * jumpHeight;
+            newPosition.y = Mathf.Lerp(_jumpStartPosition.y, _jumpEndPosition.y, t) + height;
+
             transform.position = newPosition;
 
             elapsedTime += Time.deltaTime;
-
             yield return null;
         }
 
         transform.position = _jumpEndPosition;
+        _agent.isStopped = false;  // 이동 재개
         State = EMonsterState.Trace;
+        Debug.Log("상태 전환 : Jump -> Trace");
     }
 
     private void Comeback()
