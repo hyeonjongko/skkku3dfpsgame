@@ -319,14 +319,14 @@ MonoBehaviour:
   _animator: {fileID: 0}
   _playerStats: {fileID: 0}
   DetectDistance: 7
-  AttackDistance: 3
+  AttackDistance: 2
   MoveSpeed: 5
   AttackSpeed: 2
   AttackTimer: 0
   AttackDamage: 20
   _patrolPoints:
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 7256621938926068568, guid: 95c58730db0438b40b73da3ad58e3052, type: 3}
+  - {fileID: 418686085418905492, guid: bc7b77f4db6af5147a1f2c53f2b3ad2c, type: 3}
   _patrolWaitTime: 2
   _patrolArriveDistance: 0.5
   _knockbackForce: 50

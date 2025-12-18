@@ -1,5 +1,7 @@
 
+using NUnit.Framework;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -9,8 +11,11 @@ public class PlayerGunFire : MonoBehaviour
     [SerializeField] private Transform _fireTransform;
     [SerializeField] private ParticleSystem _hitEffect;
     [SerializeField] private CameraRotate _cameraRotate;
+    [SerializeField] private List<GameObject> _muzzleEffects;
 
     [SerializeField] private Monster _monster;
+
+    private Animator _animator;
 
     [Header("연사 속도")]
     private float _time = 0f;
@@ -45,6 +50,7 @@ public class PlayerGunFire : MonoBehaviour
         _time = _delay;
         _bulletCount = _bulletCountMax;
         _cameraRotate = Camera.main.GetComponent<CameraRotate>();
+        _animator = GetComponentInChildren<Animator>();
     }
 
     private void Update()
@@ -60,57 +66,14 @@ public class PlayerGunFire : MonoBehaviour
             {
                 if (_time >= _delay)
                 {
-                    //2. Ray를 생성하고 발사할 위치, 방향, 거리를 설정한다(쏜다)
-                    Ray ray = new Ray(_fireTransform.position, Camera.main.transform.forward);
-                    //3.RaycastHit(충돌한 대상의 정보)를 저장할 변수를 생성한다.
-                    RaycastHit hitInfo = new RaycastHit();
-                    //4. 충돌했다면.. 피격 이펙트 표시
-                    bool isHit = Physics.Raycast(ray, out hitInfo);
-                    if (isHit)
-                    {
-                        //5. 충돌했다면...피격한 오브젝트 이름 출력
-                        Debug.Log(hitInfo.transform.name);
+                    Fire();
 
-                        //파티클 생성과 플레이 방식
-                        //1. Instantiate 방식 (+풀링) -> 한 화면에 여러가지 수정 후 여러개 그릴경우 / 새로 생성(메모리, CPU)
-                        //2. 하나를 캐싱해두고 Play   -> 인스펙터 설정 그대로 그릴 경우 / 단점 : 재실행이므로 기존의 것이 삭제
-                        //3. 하나를 캐싱해두고 Emit   -> 인스펙터 설정을 수정 후 그릴 경우
-                        //ParticleSystem hitEffect = Instantiate(_hitEffect, hitInfo.point, Quaternion.identity);
-
-                        _hitEffect.transform.position = hitInfo.point;
-                        _hitEffect.transform.forward = hitInfo.normal;
-
-                        _hitEffect.Play();
-
-                        //태그랑 레이어 비교 안한 이유?
-                        Monster monster = hitInfo.collider.gameObject.GetComponent<Monster>();
-                        if (monster != null)
-                        {
-                            Vector3 knockbackDirection = (monster.transform.position - _fireTransform.position).normalized;
-                            monster.TryTakeDamage(10, knockbackDirection * BulletKnockbackForce);
-                            //StartCoroutine(_monster.Hit_Coroutine());
-                        }
-                        Drum drum = hitInfo.collider.gameObject.GetComponent<Drum>();
-                        if (drum != null)
-                        {
-                            drum.TryTakeDamage(10);
-                        }
-
-                        _cameraRotate.AddRecoil(RecoilAmount);
-
-                        //ParticleSystem.EmitParams emitParams = new ParticleSystem.EmitParams();
-                        //emitParams.position = hitInfo.point;
-                        //emitParams.rotation3D = Quaternion.LookRotation(hitInfo.normal).eulerAngles;
-
-                        //_hitEffect.Emit(emitParams, 1); //Emit(커스텀할 정보, 분출할 갯수)
-                    }
-                    _bulletCount--;
-                    _shootBullets++;
-                    _time = 0f;
+                    StartCoroutine(MuzzleFlash_Coroutine());
                 }
                 _time += Time.deltaTime;
             }
         }
+
         if (Input.GetKeyDown(KeyCode.R) && !IsReloading && ReverseBullets > 0)
         {
             StartCoroutine(Reload_Coroutine());
@@ -120,6 +83,70 @@ public class PlayerGunFire : MonoBehaviour
         //Raycast : 레이저를 발사
         //RaycastHit : 레이저가 물체와 충돌했다면 그 정보를 저장하는 구조체
     }
+
+    private IEnumerator MuzzleFlash_Coroutine()
+    {
+        GameObject muzzleEffect = _muzzleEffects[Random.Range(0, _muzzleEffects.Count)];
+
+        muzzleEffect.SetActive(true);
+
+        yield return new WaitForSeconds(0.06f);
+
+        muzzleEffect.SetActive(false);
+    }
+
+    private void Fire()
+    {
+        _animator.SetTrigger("Attack");
+        //2. Ray를 생성하고 발사할 위치, 방향, 거리를 설정한다(쏜다)
+        Ray ray = new Ray(_fireTransform.position, Camera.main.transform.forward);
+        //3.RaycastHit(충돌한 대상의 정보)를 저장할 변수를 생성한다.
+        RaycastHit hitInfo = new RaycastHit();
+        //4. 충돌했다면.. 피격 이펙트 표시
+        bool isHit = Physics.Raycast(ray, out hitInfo);
+        if (isHit)
+        {
+            //5. 충돌했다면...피격한 오브젝트 이름 출력
+            Debug.Log(hitInfo.transform.name);
+
+            //파티클 생성과 플레이 방식
+            //1. Instantiate 방식 (+풀링) -> 한 화면에 여러가지 수정 후 여러개 그릴경우 / 새로 생성(메모리, CPU)
+            //2. 하나를 캐싱해두고 Play   -> 인스펙터 설정 그대로 그릴 경우 / 단점 : 재실행이므로 기존의 것이 삭제
+            //3. 하나를 캐싱해두고 Emit   -> 인스펙터 설정을 수정 후 그릴 경우
+            //ParticleSystem hitEffect = Instantiate(_hitEffect, hitInfo.point, Quaternion.identity);
+
+            _hitEffect.transform.position = hitInfo.point;
+            _hitEffect.transform.forward = hitInfo.normal;
+
+            _hitEffect.Play();
+
+            //태그랑 레이어 비교 안한 이유?
+            Monster monster = hitInfo.collider.gameObject.GetComponent<Monster>();
+            if (monster != null)
+            {
+                Vector3 knockbackDirection = (monster.transform.position - _fireTransform.position).normalized;
+                monster.TryTakeDamage(10, knockbackDirection * BulletKnockbackForce);
+                //StartCoroutine(_monster.Hit_Coroutine());
+            }
+            Drum drum = hitInfo.collider.gameObject.GetComponent<Drum>();
+            if (drum != null)
+            {
+                drum.TryTakeDamage(10);
+            }
+
+            _cameraRotate.AddRecoil(RecoilAmount);
+
+            //ParticleSystem.EmitParams emitParams = new ParticleSystem.EmitParams();
+            //emitParams.position = hitInfo.point;
+            //emitParams.rotation3D = Quaternion.LookRotation(hitInfo.normal).eulerAngles;
+
+            //_hitEffect.Emit(emitParams, 1); //Emit(커스텀할 정보, 분출할 갯수)
+        }
+        _bulletCount--;
+        _shootBullets++;
+        _time = 0f;
+    }
+
     private IEnumerator Reload_Coroutine()
     {
         _isReloading = true;

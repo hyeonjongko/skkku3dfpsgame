@@ -44,7 +44,7 @@ public class Monster : MonoBehaviour
 
     [SerializeField] private PlayerStats _playerStats;
 
-    private MonsterAttack _monsterAttack;
+    //private MonsterAttack _monsterAttack;
 
 
     public float DetectDistance = 2.0f;
@@ -85,7 +85,7 @@ public class Monster : MonoBehaviour
         {
             _animator = GetComponentInChildren<Animator>();
         }
-        _monsterAttack = GetComponentInChildren<MonsterAttack>();
+        //_monsterAttack = GetComponentInChildren<MonsterAttack>();
     }
     private void Start()
     {
@@ -334,6 +334,7 @@ public class Monster : MonoBehaviour
 
         if (distance > AttackDistance)
         {
+            _animator.SetTrigger("AttackToTrace");
             State = EMonsterState.Trace;
             Debug.Log("상태 전환 : Attack -> Trace");
             return;
@@ -346,9 +347,9 @@ public class Monster : MonoBehaviour
             AttackTimer = 0f;
             //플레이어를 공격하는 상태
             Debug.Log("플레이어 공격");
-            _monsterAttack.PlayerAttack();
             //_playerStats.Health.Consume(AttackDamage);
             //_playerStats.TryTakeDamage(AttackDamage);
+            //_monsterAttack.PlayerAttack();
 
         }
 
@@ -375,6 +376,7 @@ public class Monster : MonoBehaviour
 
         if (Health.Value > 0)
         {
+            _animator.SetTrigger("Hit");
             Debug.Log($"상태 전환: {State} -> Hit");
             State = EMonsterState.Hit;
 
@@ -382,6 +384,7 @@ public class Monster : MonoBehaviour
         }
         else
         {
+            _animator.SetTrigger("Death");
             Debug.Log($"상태 전환: {State} -> Death");
             State = EMonsterState.Death;
 
@@ -397,7 +400,6 @@ public class Monster : MonoBehaviour
     }
     public IEnumerator Hit_Coroutine()
     {
-        _animator.SetTrigger("Hit");
         yield return new WaitForSeconds(0.2f);
         State = EMonsterState.Idle;
         Debug.Log("몬스터가 데미지를 받았습니다.");
