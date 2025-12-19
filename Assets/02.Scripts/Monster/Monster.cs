@@ -79,6 +79,8 @@ public class Monster : MonoBehaviour
     private Vector3 _jumpStartPosition;
     private Vector3 _jumpEndPosition;
 
+    private float _offset = 1f;
+
     private void Awake()
     {
         if(_animator == null)
@@ -289,12 +291,15 @@ public class Monster : MonoBehaviour
         {
             float t = elapsedTime / jumpTime;
 
+            Vector3 adjustedEndPos = _jumpEndPosition;
+            adjustedEndPos.y += _offset;
+
             // 수평 이동 (Linear)
             Vector3 newPosition = Vector3.Lerp(_jumpStartPosition, _jumpEndPosition, t);
 
             // 수직 이동 (포물선) - 0에서 시작해서 중간에 최고점, 다시 0으로
             float height = Mathf.Sin(t * Mathf.PI) * jumpHeight;
-            newPosition.y = Mathf.Lerp(_jumpStartPosition.y, _jumpEndPosition.y, t) + height;
+            newPosition.y = Mathf.Lerp(_jumpStartPosition.y, adjustedEndPos.y, t) + height;
 
             transform.position = newPosition;
 
@@ -302,7 +307,10 @@ public class Monster : MonoBehaviour
             yield return null;
         }
 
-        transform.position = _jumpEndPosition;
+        Vector3 finalPosition = _jumpEndPosition;
+        finalPosition.y += _offset;
+        transform.position = finalPosition;
+
         _agent.isStopped = false;  // 이동 재개
         State = EMonsterState.Trace;
         Debug.Log("상태 전환 : Jump -> Trace");
