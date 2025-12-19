@@ -144,31 +144,55 @@ public class PlayerGunFire : MonoBehaviour
 
             _hitEffect.Play();
 
-            //태그랑 레이어 비교 안한 이유?
-            Monster monster = hitInfo.collider.gameObject.GetComponent<Monster>();
-            if (monster != null)
+            Damage damage = new Damage()
             {
-                Vector3 knockbackDirection = (monster.transform.position - _fireTransform.position).normalized;
-                monster.TryTakeDamage(10, knockbackDirection * BulletKnockbackForce);
-                //StartCoroutine(_monster.Hit_Coroutine());
-            }
-            Drum drum = hitInfo.collider.gameObject.GetComponent<Drum>();
-            if (drum != null)
+                Value = hitInfo.distance,
+                HitPoint = hitInfo.point,
+                Who = gameObject,
+                Critical = false,
+            };
+
+            //단점
+            // - 같은 기능인데 중복된 코드가 많다.
+            // - 같은 기능인데 기능의 이름과 매개변수가 다르다.
+
+            //인터페이스를 사용하면 된다. (두 개 이사으이 시스템이나 데이터를 교환하는 방법 -> 약속을 강제한다)
+            //인터페이스를 설계한다는 것은 중급 개발자의 시작
+            //플레이어 - 약속 : IDamageable - (몬스터, 드럼, 나무, 장애물 등등)
+
+            IDamageable damageable = hitInfo.collider.GetComponent<IDamageable>();
+            if (damageable != null)
             {
-                drum.TryTakeDamage(10);
+                {
+                    damageable.TryTakeDamage(damage);
+                }
+
+                //태그랑 레이어 비교 안한 이유?
+                //Monster monster = hitInfo.collider.gameObject.GetComponent<Monster>();
+                //if (monster != null)
+                //{
+                //    Vector3 knockbackDirection = (monster.transform.position - _fireTransform.position).normalized;
+                //    monster.TryTakeDamage(damage);
+                //    //StartCoroutine(_monster.Hit_Coroutine());
+                //}
+                //Drum drum = hitInfo.collider.gameObject.GetComponent<Drum>();
+                //if (drum != null)
+                //{
+                //    drum.TryTakeDamage(damage);
+                //}
+
+                _cameraRotate.AddRecoil(RecoilAmount);
+
+                //ParticleSystem.EmitParams emitParams = new ParticleSystem.EmitParams();
+                //emitParams.position = hitInfo.point;
+                //emitParams.rotation3D = Quaternion.LookRotation(hitInfo.normal).eulerAngles;
+
+                //_hitEffect.Emit(emitParams, 1); //Emit(커스텀할 정보, 분출할 갯수)
             }
-
-            _cameraRotate.AddRecoil(RecoilAmount);
-
-            //ParticleSystem.EmitParams emitParams = new ParticleSystem.EmitParams();
-            //emitParams.position = hitInfo.point;
-            //emitParams.rotation3D = Quaternion.LookRotation(hitInfo.normal).eulerAngles;
-
-            //_hitEffect.Emit(emitParams, 1); //Emit(커스텀할 정보, 분출할 갯수)
+            _bulletCount--;
+            _shootBullets++;
+            _time = 0f;
         }
-        _bulletCount--;
-        _shootBullets++;
-        _time = 0f;
     }
 
     private IEnumerator Reload_Coroutine()

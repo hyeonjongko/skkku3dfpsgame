@@ -7,7 +7,7 @@ using UnityEngine.AI;
 using UnityEngine.UIElements;
 using static PlayerMove;
 
-public class Monster : MonoBehaviour
+public class Monster : MonoBehaviour, IDamageable
 {
     #region Comment
     // 목표 : 처음엔 가만히 있지만 플레이어가 다가가면 쫓아오는 좀비 몬스터를 만들고 싶다.
@@ -370,21 +370,29 @@ public class Monster : MonoBehaviour
     }
 
     //public float Health = 100;
-    public bool TryTakeDamage(float damage, Vector3 knockbackDirection)
+
+    public GameObject bloodEffectPrefab;
+
+    public bool TryTakeDamage(Damage damage)
     {
+        //데미지를 받으면 데미지를 받은 위치에 혈흔 이펙트를 생성해서 플레이 하고 싶다.
+        // 그 이펙트는 "몬스터를 따라다녀야" 한다.
+        GameObject bloodEffect = Instantiate(bloodEffectPrefab, _player.transform.position,Quaternion.identity, transform);
+        bloodEffect.transform.forward = damage.Normal;
+
         if (State == EMonsterState.Death || State == EMonsterState.Hit)
         {
             return false;
         }
 
-        Health.Consume(damage);
+        Health.Consume(damage.Value);
 
         _agent.isStopped = true; // 이동 일시정지
         _agent.ResetPath();      // 경로(=목적지) 삭제
 
-        if (knockbackDirection != Vector3.zero)
+        if (damage.knockbackDirection != Vector3.zero)
         {
-            _knockbackVelocity = knockbackDirection.normalized * _knockbackForce;
+            _knockbackVelocity = damage.knockbackDirection.normalized * _knockbackForce;
         }
 
         if (Health.Value > 0)
@@ -407,10 +415,6 @@ public class Monster : MonoBehaviour
         return true;
     }
 
-    public bool TryTakeDamage(float damage)
-    {
-        return TryTakeDamage(damage, Vector3.zero);
-    }
     public IEnumerator Hit_Coroutine()
     {
         yield return new WaitForSeconds(0.2f);

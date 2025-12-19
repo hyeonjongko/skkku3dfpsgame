@@ -40,7 +40,13 @@ public class Bomb : MonoBehaviour
         //GetMask: 문자열 목록 → 비트 마스크(int) : 레이어 마스크 값이 필요한 함수(Raycast, OverlapSphere 등)에서 여러 레이어를 지정할 때
         Collider[] colliders_Monster = Physics.OverlapSphere(position, ExplosionRadius, LayerMask.GetMask("Monster"));
 
-
+        Damage damage = new Damage()
+        {
+            Value = Damage,
+            HitPoint = transform.position,
+            Who = this.gameObject,
+            Critical = false,
+        };
 
         for (int i = 0; i < colliders_Monster.Length; i++)
         {
@@ -53,6 +59,9 @@ public class Bomb : MonoBehaviour
 
                 float finalDamage = Damage / distance; // 폭발 원점과 거리에 따라서 데미지를 다르게 준다.
 
+                damage.Value = finalDamage;
+
+
                 // 넉백 방향 계산 (폭발 중심 -> 몬스터 방향 = 피격 방향 반대)
                 Vector3 knockbackDirection = (monster.transform.position - position).normalized;
                 knockbackDirection += Vector3.up * ExplosionUpwardForce;
@@ -60,7 +69,9 @@ public class Bomb : MonoBehaviour
                 // 거리에 반비례하는 넉백 (가까울수록 강하게)
                 float knockbackMultiplier = 1f / distance;
 
-                monster.TryTakeDamage(finalDamage, knockbackDirection * ExplosionKnockbackForce * knockbackMultiplier);
+                damage.knockbackDirection = knockbackDirection * ExplosionKnockbackForce * knockbackMultiplier;
+
+                monster.TryTakeDamage(damage);
             }
         }
 
@@ -77,7 +88,9 @@ public class Bomb : MonoBehaviour
 
                 float finalDamage = Damage / distance; // 폭발 원점과 거리에 따라서 데미지를 다르게 준다.
 
-                drum.TryTakeDamage(finalDamage);
+                damage.Value = finalDamage;
+
+                drum.TryTakeDamage(damage);
             }
         }
 
