@@ -240,6 +240,7 @@ public class Monster : MonoBehaviour
         {
             State = EMonsterState.Attack;
             Debug.Log("상태 전환 : Trace -> Attack");
+
         }
 
         if (_agent.isOnOffMeshLink)
