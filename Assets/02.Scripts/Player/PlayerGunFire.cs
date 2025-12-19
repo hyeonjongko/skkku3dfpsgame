@@ -17,6 +17,10 @@ public class PlayerGunFire : MonoBehaviour
 
     private Animator _animator;
 
+    private EZoomMode _zoonMode = EZoomMode.Normal;
+    [SerializeField] private GameObject _normalCrosshair;
+    [SerializeField] private GameObject _zoomInCrosshair;
+
     [Header("연사 속도")]
     private float _time = 0f;
     public float _delay = 3.5f;
@@ -55,6 +59,8 @@ public class PlayerGunFire : MonoBehaviour
 
     private void Update()
     {
+        ZoomModeCheck();
+
         //1. 마우스 왼쪽 버튼이 눌린다면
         if (Input.GetMouseButton(0) && !IsReloading && GameManager.Instance.State == EGameState.Playing)
         {
@@ -82,6 +88,24 @@ public class PlayerGunFire : MonoBehaviour
         //Ray : 레이저(시작위치, 방향, 거리)
         //Raycast : 레이저를 발사
         //RaycastHit : 레이저가 물체와 충돌했다면 그 정보를 저장하는 구조체
+    }
+
+    private void ZoomModeCheck()
+    {
+        if (Input.GetMouseButton(1))
+        {
+            _zoonMode = EZoomMode.ZoomIn;
+            _normalCrosshair.SetActive(false);
+            _zoomInCrosshair.SetActive(true);
+            Camera.main.fieldOfView = 10f;
+        }
+        else
+        {
+            _zoonMode = EZoomMode.Normal;
+            _normalCrosshair.SetActive(true);
+            _zoomInCrosshair.SetActive(false);
+            Camera.main.fieldOfView = 60f;
+        }
     }
 
     private IEnumerator MuzzleFlash_Coroutine()
