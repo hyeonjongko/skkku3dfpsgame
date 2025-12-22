@@ -35,6 +35,12 @@ public class PlayerMove : MonoBehaviour
         _controller = GetComponent<CharacterController>();
         _stats = GetComponent<PlayerStats>();
         _animator = GetComponentInChildren<Animator>();
+
+        // NavMeshAgent 초기에는 비활성화
+        if (_agent != null)
+        {
+            _agent.enabled = false;
+        }
     }
 
     private void Start()
@@ -45,25 +51,46 @@ public class PlayerMove : MonoBehaviour
 
     private void Update()
     {
-        // 0. 중력을 누적한다.
-        _yVelocity += _config.Gravity * Time.deltaTime;
-
-        // 1. 키보드 입력 받기
-        float x = Input.GetAxis("Horizontal"); // -1 ~ 1로  점차 변함
-        float y = Input.GetAxis("Vertical");
-
-        // 2. 입력에 따른 방향 구하기 
-        // 현재는 유니티 세상의 절대적인 방향이 기준 (글로벌/월드 좌표계)
-        // 내가 원하는 것은 카메라가 쳐다보는 방향이 기준으로
-
-        // - 글로벌 좌표 방향을 구한다. 
-        Vector3 direction = new Vector3(x, 0, y);
-        _animator.SetFloat("Speed", direction.magnitude);
-
-        direction.Normalize();
-
-        if(GameManager.Instance.State == EGameState.Playing)
+        // TopView 모드일 때
+        if (GameManager.Instance.State == EGameState.TopView)
         {
+            _controller.enabled = false;
+            _agent.enabled = true;
+
+            // 마우스 왼쪽 클릭 감지
+            if (Input.GetMouseButtonDown(0))
+            {
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+                // Raycast로 클릭한 지점 찾기 (세미콜론 제거!)
+                if (Physics.Raycast(ray.origin, ray.direction, out rayHit))
+                {
+                    // NavMeshAgent로 목표 지점 설정
+                    _agent.SetDestination(rayHit.point);
+                }
+            }
+            return;
+        }
+
+        // Playing 모드일 때
+        if (GameManager.Instance.State == EGameState.Playing)
+        {
+            _controller.enabled = true;
+            _agent.enabled = false;
+
+            // 0. 중력을 누적한다.
+            _yVelocity += _config.Gravity * Time.deltaTime;
+
+            // 1. 키보드 입력 받기
+            float x = Input.GetAxis("Horizontal"); // -1 ~ 1로 점차 변함
+            float y = Input.GetAxis("Vertical");
+
+            // 2. 입력에 따른 방향 구하기 
+            Vector3 direction = new Vector3(x, 0, y);
+            _animator.SetFloat("Speed", direction.magnitude);
+
+            direction.Normalize();
+
             // - 점프! : 점프 키를 누르고 && 땅이라면
             if (Input.GetButtonDown("Jump") && _controller.isGrounded && _jumpCount == 2)
             {
@@ -85,7 +112,6 @@ public class PlayerMove : MonoBehaviour
             direction = Camera.main.transform.TransformDirection(direction);
             direction.y = _yVelocity; // 중력 적용
 
-
             float moveSpeed = _stats.MoveSpeed.Value;
             if (Input.GetKey(KeyCode.LeftShift) && _controller.isGrounded)
             {
@@ -98,23 +124,6 @@ public class PlayerMove : MonoBehaviour
             // 3. 방향으로 이동시키기  
             _controller.Move(direction * moveSpeed * Time.deltaTime);
         }
-        if (GameManager.Instance.State == EGameState.TopView)
-        {
-            // 마우스 왼쪽 클릭 감지
-            if (Input.GetMouseButtonDown(0))
-            {
-                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-                // Raycast로 클릭한 지점 찾기
-                if (Physics.Raycast(ray.origin, ray.direction, out rayHit));
-                {
-                    // NavMeshAgent로 목표 지점 설정
-                    _agent.SetDestination(rayHit.point);
-                }
-            }
-        }
-
-
     }
     private void Jump()
     {

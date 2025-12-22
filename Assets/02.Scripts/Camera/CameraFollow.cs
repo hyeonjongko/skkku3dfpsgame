@@ -47,12 +47,10 @@ public class CameraFollow : MonoBehaviour
         if (_isFPS)
         {
             transform.position = FPSTarget.position;
-            transform.rotation = FPSTarget.rotation; // rotation 추가!
         }
         else
         {
             transform.position = TPSTarget.position;
-            transform.rotation = TPSTarget.rotation; // rotation 추가!
         }
     }
 }
