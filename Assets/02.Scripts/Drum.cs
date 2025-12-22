@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 
 [RequireComponent(typeof(Rigidbody))]
-public class Drum : MonoBehaviour
+public class Drum : MonoBehaviour, IDamageable
 {
     Rigidbody rb;
 
@@ -24,10 +24,10 @@ public class Drum : MonoBehaviour
         _health.Initialize();
     }
 
-    public bool TryTakeDamage(float damage)
+    public bool TryTakeDamage(Damage damage)
     {
         if (_health.Value <= 0) return false;
-        _health.Decrease(damage);
+        _health.Decrease(damage.Value);
 
         if (_health.Value <= 0)
         {
@@ -47,16 +47,29 @@ public class Drum : MonoBehaviour
 
         Collider[] colliders = Physics.OverlapSphere(transform.position, _explosionRadius.Value, DamageLayer);
 
+        Damage damage = new Damage()
+        {
+            Value = _damage.Value,
+            HitPoint = transform.position,
+            Who = this.gameObject,
+            Critical = false,
+        };
+
         for (int i = 0; i < colliders.Length; i++)
         {
-            if (colliders[i].TryGetComponent<Monster>(out Monster monster))
+            if (colliders[i].TryGetComponent<IDamageable>(out IDamageable damageable))
             {
-                monster.TryTakeDamage(_damage.Value);
+                damageable.TryTakeDamage(damage);
             }
-            if (colliders[i].TryGetComponent<Drum>(out Drum drum))
-            {
-                drum.TryTakeDamage(_damage.Value);
-            }
+
+            //if (colliders[i].TryGetComponent<Monster>(out Monster monster))
+            //{
+            //    monster.TryTakeDamage(damage);
+            //}
+            //if (colliders[i].TryGetComponent<Drum>(out Drum drum))
+            //{
+            //    drum.TryTakeDamage(damage);
+            //}
 
         }
 

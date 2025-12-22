@@ -12,8 +12,13 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] private TextMeshProUGUI _stateTextUI;
 
-    [SerializeField ] private float _readyTime = 2.0f;
+    [SerializeField] private float _readyTime = 2.0f;
     private float _startTextTime = 0.5f;
+
+    private float _gameOverTime = 0.5f;
+
+    [SerializeField] private PlayerStats _stats;
+
     private void Awake()
     {
         _instance = this;
@@ -27,6 +32,14 @@ public class GameManager : MonoBehaviour
         StartCoroutine(StartToPlay_Coroutuine());
     }
 
+    private void Update()
+    {
+        if (_stats.Health.Value < 0)
+        {
+            StartCoroutine(GameOver_Coroutuine());
+        }
+    }
+
     private IEnumerator StartToPlay_Coroutuine()
     {
         yield return new WaitForSeconds(_readyTime);
@@ -38,6 +51,18 @@ public class GameManager : MonoBehaviour
         _state = EGameState.Playing;
 
         _stateTextUI.gameObject.SetActive(false);
+    }
+
+    private IEnumerator GameOver_Coroutuine()
+    {
+        _stateTextUI.gameObject.SetActive(true);
+        _stateTextUI.text = "게임 오버";
+
+        _state = EGameState.GameOver;
+
+        yield return new WaitForSeconds(_gameOverTime);
+        _stateTextUI.gameObject.SetActive(false);
+
     }
 
 }

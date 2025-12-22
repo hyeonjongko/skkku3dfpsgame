@@ -5,9 +5,14 @@ public class CameraFollow : MonoBehaviour
 {
     public Transform FPSTarget;
     public Transform TPSTarget;
+    public Transform TopViewTarget;
 
     private bool _isFPS = true;
+
     public bool IsFPS => _isFPS;
+
+    private bool _isTopView = false;
+    public bool IsTopView => _isTopView;
 
     private void Start()
     {
@@ -24,7 +29,6 @@ public class CameraFollow : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.T))
         {
             _isFPS = !_isFPS;
-
         }
         if (_isFPS)
         {
@@ -34,7 +38,31 @@ public class CameraFollow : MonoBehaviour
         else
         {
             transform.position = TPSTarget.position;
-            //transform.rotation = TPSTarget.rotation;
+            
+        }
+
+        if (Input.GetKeyDown(KeyCode.Q))
+        {
+            _isTopView = !_isTopView;
+        }
+        if (_isTopView)
+        {
+            transform.position = TopViewTarget.position;
+            transform.rotation = TopViewTarget.rotation;
+        }
+        else
+        {
+            if (_isFPS)
+            {
+                transform.position = FPSTarget.position;
+
+            }
+            else
+            {
+                transform.position = TPSTarget.position;
+
+            }
+
         }
     }
 

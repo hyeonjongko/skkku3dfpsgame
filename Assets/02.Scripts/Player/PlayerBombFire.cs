@@ -29,17 +29,12 @@ public class PlayerBombFire : MonoBehaviour
 
     private void Update()
     {
-        if(Input.GetMouseButtonDown(1) && GameManager.Instance.State == EGameState.Playing)
+        if(Input.GetMouseButtonDown(2) && GameManager.Instance.State == EGameState.Playing)
         {
             _bombCount--;
             if(_bombCount >= 0)
             {
-                
-                GameObject bomb = _bombFactory.MakeBomb(_fireTransform.position);
-                //Bomb bomb = Instantiate(_bombPrefab, _fireTransform.position, Quaternion.identity);
-                Rigidbody rigidbody = bomb.GetComponent<Rigidbody>();
-                rigidbody.AddForce(Camera.main.transform.forward * _throwPower, ForceMode.Impulse);
-                Debug.Log($"남은 폭탄 수 : {_bombCount}");
+                BoomFire();
             }
             else if(_bombCount < 0)
             {
@@ -50,4 +45,12 @@ public class PlayerBombFire : MonoBehaviour
         }
     }
 
+    private void BoomFire()
+    {
+        GameObject bomb = _bombFactory.MakeBomb(_fireTransform.position);
+        //Bomb bomb = Instantiate(_bombPrefab, _fireTransform.position, Quaternion.identity);
+        Rigidbody rigidbody = bomb.GetComponent<Rigidbody>();
+        rigidbody.AddForce(Camera.main.transform.forward * _throwPower, ForceMode.Impulse);
+        Debug.Log($"남은 폭탄 수 : {_bombCount}");
+    }
 }

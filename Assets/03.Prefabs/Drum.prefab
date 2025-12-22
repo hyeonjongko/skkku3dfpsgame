@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 6187206700144042716}
   - component: {fileID: -1674482233947440654}
   - component: {fileID: -1508985997015304075}
+  - component: {fileID: 7345884585430576890}
   m_Layer: 8
   m_Name: Drum
   m_TagString: Untagged
@@ -159,7 +160,23 @@ MonoBehaviour:
     _value: 100
     _regenValue: 0
   _damage:
-    _value: 0
+    _value: 100
   _explosionRadius:
     _value: 5
   _explosionParticlePrefab: {fileID: 1620140131458703901, guid: 57e5b83dfee152a47aedf7d83c83e9f5, type: 3}
+--- !u!208 &7345884585430576890
+NavMeshObstacle:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4686671343221864183}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Shape: 0
+  m_Extents: {x: 0.5, y: 1, z: 0.5}
+  m_MoveThreshold: 0.1
+  m_Carve: 1
+  m_CarveOnlyStationary: 1
+  m_Center: {x: 0, y: 0, z: 0}
+  m_TimeToStationary: 0.5
