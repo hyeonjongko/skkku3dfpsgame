@@ -19,6 +19,10 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] private PlayerStats _stats;
 
+    [SerializeField] private CameraFollow _view;
+
+    private bool isChangingState = false;
+
     private void Awake()
     {
         _instance = this;
@@ -37,6 +41,17 @@ public class GameManager : MonoBehaviour
         if (_stats.Health.Value < 0)
         {
             StartCoroutine(GameOver_Coroutuine());
+        }
+        if (!isChangingState)
+        {
+            if (_view.IsTopView && _state != EGameState.TopView)
+            {
+                StartCoroutine(TopView_Coroutuine());
+            }
+            else if (!_view.IsTopView && _state == EGameState.TopView)
+            {
+                StartCoroutine(Playing_Coroutuine());
+            }
         }
     }
 
@@ -63,6 +78,24 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(_gameOverTime);
         _stateTextUI.gameObject.SetActive(false);
 
+    }
+
+    private IEnumerator TopView_Coroutuine()
+    {
+        isChangingState = true;
+        Debug.Log("탑뷰");
+        yield return new WaitForSeconds(0.2f);
+        _state = EGameState.TopView;
+        isChangingState = false;
+    }
+
+    private IEnumerator Playing_Coroutuine()
+    {
+        isChangingState = true;
+        Debug.Log("FPS & TPS 뷰");
+        yield return new WaitForSeconds(0.2f);
+        _state = EGameState.Playing;
+        isChangingState = false;
     }
 
 }

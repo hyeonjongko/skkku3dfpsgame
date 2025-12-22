@@ -6,6 +6,8 @@ using UnityEngine;
 // CursorManager 수정
 public class CursorManager : MonoBehaviour
 {
+
+    
     private EGameState _state;
     void Update()
     {
@@ -22,6 +24,10 @@ public class CursorManager : MonoBehaviour
         {
             _state = EGameState.Playing;
             LockCursor();
+        }
+        if (_state == EGameState.TopView)
+        {
+            UnlockCursor();
         }
     }
 

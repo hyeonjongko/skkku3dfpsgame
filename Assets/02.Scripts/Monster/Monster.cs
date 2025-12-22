@@ -205,7 +205,8 @@ public class Monster : MonoBehaviour, IDamageable
         directionFlat.Normalize();
 
         // 2. 이동한다
-        _controller.Move(directionFlat * MoveSpeed * Time.deltaTime);
+        //_controller.Move(directionFlat * MoveSpeed * Time.deltaTime);
+        _agent.SetDestination(directionFlat * MoveSpeed * Time.deltaTime);
 
         // 3. 목표 지점에 도착했는지 확인 (수평 거리만 계산)
         Vector3 posFlat = new Vector3(transform.position.x, 0, transform.position.z);

@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.AI;
 
 // 키보드를 누르면 캐릭터를 그 방향으로 이동 시키고 싶다.
 [RequireComponent(typeof(CharacterController))]
@@ -22,6 +23,9 @@ public class PlayerMove : MonoBehaviour
     private CharacterController _controller;
     private PlayerStats _stats;
 
+    [SerializeField] private NavMeshAgent _agent;
+    RaycastHit rayHit = new RaycastHit();
+
     private float _yVelocity = 0f;   // 중력에 의해 누적될 y값 변수
 
     private int _jumpCount = 2;
@@ -31,6 +35,12 @@ public class PlayerMove : MonoBehaviour
         _controller = GetComponent<CharacterController>();
         _stats = GetComponent<PlayerStats>();
         _animator = GetComponentInChildren<Animator>();
+    }
+
+    private void Start()
+    {
+        _agent.speed = _stats.MoveSpeed.Value;
+
     }
 
     private void Update()
@@ -88,7 +98,23 @@ public class PlayerMove : MonoBehaviour
             // 3. 방향으로 이동시키기  
             _controller.Move(direction * moveSpeed * Time.deltaTime);
         }
-       
+        if (GameManager.Instance.State == EGameState.TopView)
+        {
+            // 마우스 왼쪽 클릭 감지
+            if (Input.GetMouseButtonDown(0))
+            {
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+                // Raycast로 클릭한 지점 찾기
+                if (Physics.Raycast(ray.origin, ray.direction, out rayHit));
+                {
+                    // NavMeshAgent로 목표 지점 설정
+                    _agent.SetDestination(rayHit.point);
+                }
+            }
+        }
+
+
     }
     private void Jump()
     {
