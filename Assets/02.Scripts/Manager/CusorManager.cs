@@ -6,9 +6,16 @@ using UnityEngine;
 // CursorManager 수정
 public class CursorManager : MonoBehaviour
 {
+    private CameraFollow _cameraFollow;
 
-    
+
     private EGameState _state;
+
+    private void Awake()
+    {
+        _cameraFollow = FindObjectOfType<CameraFollow>();
+    }
+
     void Update()
     {
         if(_state == EGameState.Ready)
@@ -25,9 +32,11 @@ public class CursorManager : MonoBehaviour
             _state = EGameState.Playing;
             LockCursor();
         }
-        if (_state == EGameState.TopView)
+        // TopView 모드일 때 커서 해제
+        if (_cameraFollow != null && _cameraFollow.IsTopView)
         {
             UnlockCursor();
+            return;
         }
     }
 
