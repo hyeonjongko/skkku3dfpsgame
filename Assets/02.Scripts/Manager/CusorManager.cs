@@ -1,14 +1,8 @@
 using UnityEngine;
 
-// GameManager에 추가
-
-
-// CursorManager 수정
 public class CursorManager : MonoBehaviour
 {
     private CameraFollow _cameraFollow;
-
-
     private EGameState _state;
 
     private void Awake()
@@ -18,25 +12,34 @@ public class CursorManager : MonoBehaviour
 
     void Update()
     {
-        if(_state == EGameState.Ready)
+        // GameManager의 상태 가져오기
+        if (GameManager.Instance != null)
         {
-            LockCursor();
+            _state = GameManager.Instance.State;
         }
-        if (Input.GetKey(KeyCode.Escape))
+
+        // 옵션 창이 열려있으면 커서를 잠그지 않음
+        if (GameManager.Instance != null && GameManager.Instance.IsOptionOpen)
         {
-            UnlockCursor();
             return;
         }
-        if (Input.GetKey(KeyCode.Tab))
+
+        // Ready 상태일 때 커서 잠금
+        if (_state == EGameState.Ready)
         {
-            _state = EGameState.UIMode;
-            UnlockCursor();
-        }
-        if (Input.GetKeyUp(KeyCode.Tab))
-        {
-            _state = EGameState.Playing;
             LockCursor();
         }
+
+        // Playing 상태일 때 커서 잠금
+        if (_state == EGameState.Playing)
+        {
+            LockCursor();
+            if (Input.GetKey(KeyCode.Tab))
+            {
+                UnlockCursor();
+            }
+        }
+
         // TopView 모드일 때 커서 해제
         if (_cameraFollow != null && _cameraFollow.IsTopView)
         {

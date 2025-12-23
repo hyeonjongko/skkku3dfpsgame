@@ -12,23 +12,22 @@ public class GameManager : MonoBehaviour
     public EGameState State => _state;
 
     [SerializeField] private TextMeshProUGUI _stateTextUI;
-
     [SerializeField] private UI_OptionPopup _optionUI;
-
     [SerializeField] private float _readyTime = 2.0f;
     private float _startTextTime = 0.5f;
-
     private float _gameOverTime = 0.5f;
-
     [SerializeField] private PlayerStats _stats;
-
     [SerializeField] private CameraFollow _view;
 
     private bool isChangingState = false;
+    private bool _isOptionOpen = false;
+    public bool IsOptionOpen => _isOptionOpen;
+    private CursorManager _cursorManager;
 
     private void Awake()
     {
         _instance = this;
+        _cursorManager = FindObjectOfType<CursorManager>();
     }
 
     private void Start()
@@ -45,6 +44,7 @@ public class GameManager : MonoBehaviour
         {
             StartCoroutine(GameOver_Coroutuine());
         }
+
         if (!isChangingState)
         {
             if (_view.IsTopView && _state != EGameState.TopView)
@@ -57,9 +57,15 @@ public class GameManager : MonoBehaviour
             }
         }
 
+        // ESC 키로 옵션 창 열기
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             Pause();
+            _isOptionOpen = true;
+            if (_cursorManager != null)
+            {
+                _cursorManager.UnlockCursor();
+            }
             _optionUI.Show();
         }
     }
@@ -67,13 +73,17 @@ public class GameManager : MonoBehaviour
     private void Pause()
     {
         Time.timeScale = 0;
-
     }
 
     public void Continue()
     {
         Time.timeScale = 1;
-
+        _isOptionOpen = false;
+        // 옵션 창을 닫을 때 커서 다시 잠금
+        if (_cursorManager != null && _state == EGameState.Playing)
+        {
+            _cursorManager.LockCursor();
+        }
     }
 
     public void Restart()
@@ -84,25 +94,19 @@ public class GameManager : MonoBehaviour
 
     public void Quit()
     {
-        //게임 종료 전 필요한 로직을 실행한다.
-        //Application.Quit(); //빌드된 상태에서 유효하다.
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
 #else
-        Application.Quit(); // 어플리케이션 종료
+        Application.Quit();
 #endif
     }
 
     private IEnumerator StartToPlay_Coroutuine()
     {
         yield return new WaitForSeconds(_readyTime);
-
         _stateTextUI.text = "시작";
-
         yield return new WaitForSeconds(_startTextTime);
-
         _state = EGameState.Playing;
-
         _stateTextUI.gameObject.SetActive(false);
     }
 
@@ -110,12 +114,9 @@ public class GameManager : MonoBehaviour
     {
         _stateTextUI.gameObject.SetActive(true);
         _stateTextUI.text = "게임 오버";
-
         _state = EGameState.GameOver;
-
         yield return new WaitForSeconds(_gameOverTime);
         _stateTextUI.gameObject.SetActive(false);
-
     }
 
     private IEnumerator TopView_Coroutuine()
@@ -135,5 +136,4 @@ public class GameManager : MonoBehaviour
         _state = EGameState.Playing;
         isChangingState = false;
     }
-
 }

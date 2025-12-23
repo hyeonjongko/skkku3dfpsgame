@@ -1266,7 +1266,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: b23c470d948872246b60de49c0d1ef93, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 97e0161acb8f13a4380d37d418a13735, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -2159,7 +2159,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1269249625}
   - component: {fileID: 1269249624}
-  - component: {fileID: 1269249626}
   m_Layer: 0
   m_Name: Parent
   m_TagString: Untagged
@@ -2217,27 +2216,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1269249626
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1269249623}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c700644ef02a90e4ca7ffa677110b187, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _passwordCofirmObject: {fileID: 785452288}
-  _gotoRegisterButton: {fileID: 1560174185}
-  _loginButton: {fileID: 1589074694}
-  _gotoLoginButton: {fileID: 79964753}
-  _registerButton: {fileID: 281386873}
-  _messageTextUI: {fileID: 426508560}
-  _idInputField: {fileID: 38250382}
-  _passwordInputField: {fileID: 866259265}
-  _passwordConfirmInputField: {fileID: 60915097}
 --- !u!1 &1319956472
 GameObject:
   m_ObjectHideFlags: 0
@@ -4164,9 +4142,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 1965953104}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6c1f833d8b12fc6498f6a23deea19143, type: 3}
+  m_Script: {fileID: 11500000, guid: c700644ef02a90e4ca7ffa677110b187, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _passwordCofirmObject: {fileID: 785452288}
+  _gotoRegisterButton: {fileID: 1560174185}
+  _loginButton: {fileID: 1589074694}
+  _gotoLoginButton: {fileID: 79964753}
+  _registerButton: {fileID: 281386873}
+  _messageTextUI: {fileID: 426508560}
+  _idInputField: {fileID: 38250382}
+  _passwordInputField: {fileID: 866259265}
+  _passwordConfirmInputField: {fileID: 60915097}
 --- !u!1 &1984232269
 GameObject:
   m_ObjectHideFlags: 0

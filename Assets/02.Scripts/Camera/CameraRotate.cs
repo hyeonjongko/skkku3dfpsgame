@@ -25,6 +25,7 @@ public class CameraRotate : MonoBehaviour
     }
     private void Update()
     {
+        if (Input.GetKey(KeyCode.Tab)) return;
         if (Mathf.Abs(_currentShakeX) > 0.01f)
         {
             _currentShakeX = Mathf.Lerp(_currentShakeX, 0f, ShakeRecoverySpeed * Time.deltaTime);
