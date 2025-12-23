@@ -22,12 +22,17 @@ public class CursorManager : MonoBehaviour
         {
             LockCursor();
         }
-        if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKey(KeyCode.Tab))
+        if (Input.GetKey(KeyCode.Escape))
+        {
+            UnlockCursor();
+            return;
+        }
+        if (Input.GetKey(KeyCode.Tab))
         {
             _state = EGameState.UIMode;
             UnlockCursor();
         }
-        if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyUp(KeyCode.Tab))
+        if (Input.GetKeyUp(KeyCode.Tab))
         {
             _state = EGameState.Playing;
             LockCursor();

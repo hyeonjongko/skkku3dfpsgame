@@ -1,6 +1,7 @@
 using System.Collections;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -11,6 +12,8 @@ public class GameManager : MonoBehaviour
     public EGameState State => _state;
 
     [SerializeField] private TextMeshProUGUI _stateTextUI;
+
+    [SerializeField] private UI_OptionPopup _optionUI;
 
     [SerializeField] private float _readyTime = 2.0f;
     private float _startTextTime = 0.5f;
@@ -53,6 +56,41 @@ public class GameManager : MonoBehaviour
                 StartCoroutine(Playing_Coroutuine());
             }
         }
+
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            Pause();
+            _optionUI.Show();
+        }
+    }
+
+    private void Pause()
+    {
+        Time.timeScale = 0;
+
+    }
+
+    public void Continue()
+    {
+        Time.timeScale = 1;
+
+    }
+
+    public void Restart()
+    {
+        Time.timeScale = 1;
+        SceneManager.LoadScene("LoadingScene");
+    }
+
+    public void Quit()
+    {
+        //게임 종료 전 필요한 로직을 실행한다.
+        //Application.Quit(); //빌드된 상태에서 유효하다.
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#else
+        Application.Quit(); // 어플리케이션 종료
+#endif
     }
 
     private IEnumerator StartToPlay_Coroutuine()
