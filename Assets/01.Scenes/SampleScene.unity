@@ -8010,18 +8010,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Zombie
       objectReference: {fileID: 0}
-    - target: {fileID: 4128283269795352350, guid: ff443aa2376290141b2315f3e1c773fa, type: 3}
-      propertyPath: m_Enabled
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 6267707509272629589, guid: ff443aa2376290141b2315f3e1c773fa, type: 3}
       propertyPath: _player
       value: 
       objectReference: {fileID: 585977709}
-    - target: {fileID: 6267707509272629589, guid: ff443aa2376290141b2315f3e1c773fa, type: 3}
-      propertyPath: _playerStats
-      value: 
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
